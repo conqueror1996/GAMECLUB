@@ -1,0 +1,733 @@
+ * Serving Flask app 'app'
+ * Debug mode: off
+[INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.0.100:5001
+[INFO] [33mPress CTRL+C to quit[0m
+[INFO] Started Telegram Bot Manager polling.
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:08] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:08] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:09] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:09] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:10] "GET / HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:10] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:10] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[INFO] 🧹 FRESH START: All cache, tables, WS, balances cleared for new login
+[INFO] Starting login for Account 1 (Player)...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:13] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:14] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:14] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:15] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:16] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:17] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:17] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:18] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:18] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:19] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] Fetching login redirect URL: https://starexch555.com/?uid=7260579
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:20] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:21] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:22] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:23] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:24] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:25] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:26] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:26] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] Launcher token source: https://de3-lbv2.horances.com?playerToken=3dcc003b-9cd9-4a72-99dc-492428890ab5&operatorToken=CSGAa5CN7sJSuRq6jqNgf7KOzrp...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:27] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:28] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:28] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:29] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:30] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:30] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:31] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:32] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:32] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:33] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:34] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] Session activation redirect chain completed
+[INFO] Starting login for Account 2 (Banker)...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:35] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:35] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 💰 [Balance Update] Account 1 (Player): Rs. 200.00 (was: Rs. 0.00)
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:36] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:37] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] Fetching login redirect URL: https://starexch555.com/?uid=7261857
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:37] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] All available baccarat games sorted: ['e - Baccarat A', 'e - Baccarat B', 'e - Baccarat C', 'e - Baccarat D', 'e - Baccarat E']
+[INFO] [Account 1 (Player)] Selected 4 baccarat tables: ['e - Baccarat A', 'e - Baccarat B', 'e - Baccarat C', 'e - Baccarat D']
+[INFO] [Account 1 (Player)] Sample Baccarat Game JSON: {'name': 'e - Baccarat A', 'token': 'bc-12', 'status': 0, 'thumbnails': [{'width': 301, 'height': 180, 'imageUrl': 'https://de3-md.horances.com/media/thumbnails/an4221305i520241009081359.png', 'videoUrl': '', 'isManuallyUploaded': True}, {'width': 1731, 'height': 1320, 'imageUrl': 'https://de3-md.horances.com/media/thumbnails/h1w0240tch220241009081359.png', 'videoUrl': '', 'isManuallyUploaded': True}, {'width': 2400, 'height': 1597, 'imageUrl': 'https://de3-md.horances.com/media/thumbnails/arcwi5vstxb20241009083402.png', 'videoUrl': '', 'isManuallyUploaded': True}, {'width': 550, 'height': 550, 'imageUrl': 'https://de3-md.horances.com/media/thumbnails/xzvd55la4hq20241009083402.png', 'videoUrl': '', 'isManuallyUploaded': True}], 'gameType': 6, 'categories': ['table-games', 'baccarat'], 'isFeatured': False, 'isBanner': False, 'banner': {'imageUrl': '', 'videoUrl': ''}, 'hostUrl': 'https://de3-lce.horances.com', 'clientUrl': 'https://de3-cgm.horances.com/live/2/', 'labels': [{'id': 'hot', 'name': 'HOT'}, {'id': 'new', 'name': 'NEW'}], 'specs': [], 'description': '', 'slotData': None, 'liveData': {'lastResults': [2, 2, 2, 1, 1, 2, 1, 2, 2, 0], 'resultsSinceLastCutCard': [2, 1, 0, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 0, 0, 2, 2, 1, 2, 1, 1, 2, 2, 2], 'playersCount': 1, 'dealerName': 'Chen Mei', 'schedule': {'from': '', 'to': '', 'timezone': ''}, 'streamSoundEnabled': False, 'voiceoverSoundEnabled': True}, 'streamData': None, 'betData': {'min': 50.0, 'max': 500000.0}, 'spokenLanguages': ['en'], 'caseType': None, 'categoryOrderIndices': None}
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:38] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] Launcher token source: https://de3-lbv2.horances.com?playerToken=fc030395-9376-4a18-95cb-58d0c31ae724&operatorToken=CSGAa5CN7sJSuRq6jqNgf7KOzrp...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:39] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:39] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:40] "GET /api/login_status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] Session activation redirect chain completed
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:40] "POST /api/login HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:41] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:41] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:42] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:42] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] Connected to e - Baccarat D
+[INFO] [Account 2 (Banker)] All available baccarat games sorted: ['e - Baccarat A', 'e - Baccarat B', 'e - Baccarat C', 'e - Baccarat D', 'e - Baccarat E']
+[INFO] [Account 2 (Banker)] Selected 4 baccarat tables: ['e - Baccarat A', 'e - Baccarat B', 'e - Baccarat C', 'e - Baccarat D']
+[INFO] [Account 2 (Banker)] Sample Baccarat Game JSON: {'name': 'e - Baccarat A', 'token': 'bc-12', 'status': 0, 'thumbnails': [{'width': 301, 'height': 180, 'imageUrl': 'https://de3-md.horances.com/media/thumbnails/an4221305i520241009081359.png', 'videoUrl': '', 'isManuallyUploaded': True}, {'width': 1731, 'height': 1320, 'imageUrl': 'https://de3-md.horances.com/media/thumbnails/h1w0240tch220241009081359.png', 'videoUrl': '', 'isManuallyUploaded': True}, {'width': 2400, 'height': 1597, 'imageUrl': 'https://de3-md.horances.com/media/thumbnails/arcwi5vstxb20241009083402.png', 'videoUrl': '', 'isManuallyUploaded': True}, {'width': 550, 'height': 550, 'imageUrl': 'https://de3-md.horances.com/media/thumbnails/xzvd55la4hq20241009083402.png', 'videoUrl': '', 'isManuallyUploaded': True}], 'gameType': 6, 'categories': ['table-games', 'baccarat'], 'isFeatured': False, 'isBanner': False, 'banner': {'imageUrl': '', 'videoUrl': ''}, 'hostUrl': 'https://de3-lce.horances.com', 'clientUrl': 'https://de3-cgm.horances.com/live/2/', 'labels': [{'id': 'hot', 'name': 'HOT'}, {'id': 'new', 'name': 'NEW'}], 'specs': [], 'description': '', 'slotData': None, 'liveData': {'lastResults': [2, 2, 2, 1, 1, 2, 1, 2, 2, 0], 'resultsSinceLastCutCard': [2, 1, 0, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 0, 0, 2, 2, 1, 2, 1, 1, 2, 2, 2], 'playersCount': 1, 'dealerName': 'Chen Mei', 'schedule': {'from': '', 'to': '', 'timezone': ''}, 'streamSoundEnabled': False, 'voiceoverSoundEnabled': True}, 'streamData': None, 'betData': {'min': 50.0, 'max': 500000.0}, 'spokenLanguages': ['en'], 'caseType': None, 'categoryOrderIndices': None}
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:43] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] Connected to e - Baccarat C
+[INFO] [Account 1 (Player)] Connected to e - Baccarat B
+[INFO] [Account 1 (Player)] Connected to e - Baccarat A
+[INFO] [Account 1 (Player)] [e - Baccarat D] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:43] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] [Account 1 (Player)] [e - Baccarat A] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] [Account 1 (Player)] [e - Baccarat B] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:44] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:44] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:45] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:45] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:45] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:46] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:46] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] Connected to e - Baccarat C
+[INFO] [Account 2 (Banker)] Connected to e - Baccarat B
+[INFO] [Account 2 (Banker)] Connected to e - Baccarat D
+[INFO] [Account 2 (Banker)] Connected to e - Baccarat A
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:47] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat C] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] [Account 2 (Banker)] [e - Baccarat B] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] [Account 2 (Banker)] [e - Baccarat D] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] [Account 2 (Banker)] [e - Baccarat A] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:47] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:48] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:48] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:48] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:49] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:49] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:50] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:50] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:51] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:51] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:52] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:52] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:52] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:53] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:53] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:54] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:54] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672093
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672093
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:55] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:55] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:55] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:56] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:56] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:57] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:57] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672098
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672098
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:58] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:58] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:59] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:59] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:16:59] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:00] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:00] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:01] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:01] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:02] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:02] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:02] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:03] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:03] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:04] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:04] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672106
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672106
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:05] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:05] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:06] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:06] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:06] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:07] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:07] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:08] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:08] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:09] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:09] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:09] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:10] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:10] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:11] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:11] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:12] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:12] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672107
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672107
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:13] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:13] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:13] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:14] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:14] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:15] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:15] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:16] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:16] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:16] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:17] "GET /api/status HTTP/1.1" 200 -
+[INFO] 🧪 [FRAG TEST] Starting websocket fragmentation test...
+[INFO] 🧪 [FRAG TEST] Target: e - Baccarat A | Pre-staging fragmented ₹50 Player bet...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:17] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:18] "GET /api/status HTTP/1.1" 200 -
+[INFO] 🧪 [FRAG TEST] Fragment 1 (pre-staged) written to transport buffer
+[INFO] 🧪 [FRAG TEST] Fragment 2 (1-byte trigger) written in 0.47ms
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:18] "GET /api/status HTTP/1.1" 200 -
+[INFO] 🔄 PROXY FAILOVER: Switched to BACKUP proxy due to connection issue.
+[WARNING] [Account 1 (Player)] WebSocket connection failed. Swapped to backup proxy.
+[WARNING] [Account 1 (Player)] WS connection error for bc-12: received 1002 (protocol error); then sent 1002 (protocol error)
+[INFO] [Account 1 (Player)] Reconnecting e - Baccarat A in 0.5s...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:19] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:19] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:20] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:20] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:20] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] Connected to e - Baccarat A
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:21] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:21] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat A] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] 🧪 [FRAG TEST] 🧪 FRAGMENTATION TEST RESULT
+Table: e - Baccarat A
+Trigger write speed: 0.47ms
+Balance before: ₹200.00
+Balance after: ₹200.00
+Deducted: ₹0.00
+Ack status: []
+Verdict: ❌ Fragmented frame ignored/dropped. Server might not support fragmentation or proxy blocks it.
+[INFO] 🧪 [FRAG TEST] UNDO cleanup sent
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:21] "POST /api/test_fragmentation HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:22] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:22] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:23] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:23] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:23] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:24] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:24] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:25] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672127
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672127
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:25] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:26] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:26] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:27] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:27] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:27] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:28] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:28] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:29] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:30] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:30] "GET /api/logs HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:31] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672131
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672131
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:32] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:33] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:33] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:34] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:34] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:34] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:35] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:35] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:36] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:37] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:37] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:37] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:38] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:38] "GET /api/status HTTP/1.1" 200 -
+[INFO] 🧪 [FRAG TEST] Starting websocket fragmentation test...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:38] "POST /api/test_fragmentation HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672142
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672142
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:39] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:39] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:40] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:40] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:41] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:41] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:41] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:42] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:42] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:43] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:43] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:44] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:44] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:44] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:45] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:45] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:46] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:46] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672146
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672146
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:47] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:47] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:48] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:48] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:48] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:49] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:49] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:50] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:50] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:51] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:51] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:52] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:53] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:54] "GET /api/status HTTP/1.1" 200 -
+[WARNING] [Account 1 (Player)] [e - Baccarat C] 🚨 SILENCE WATCHDOG: No message for 9s — force-closing zombie WS to trigger reconnect.
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:55] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:55] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:56] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:57] "GET /api/status HTTP/1.1" 200 -
+[WARNING] [Account 2 (Banker)] [e - Baccarat C] 🚨 SILENCE WATCHDOG: No message for 9s — force-closing zombie WS to trigger reconnect.
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672156
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672156
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:58] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:58] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:17:59] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] Reconnecting e - Baccarat C in 0.5s...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:00] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:01] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:02] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:02] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] Reconnecting e - Baccarat C in 0.5s...
+[INFO] [Account 1 (Player)] Connected to e - Baccarat C
+[WARNING] [Account 1 (Player)] [e - Baccarat C] 🚨 SILENCE WATCHDOG: No message for 17s — force-closing zombie WS to trigger reconnect.
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:03] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672165
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672165
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:04] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] Connected to e - Baccarat C
+[INFO] [Account 2 (Banker)] [e - Baccarat C] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:05] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:05] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:06] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:07] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] Reconnecting e - Baccarat C in 0.5s...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:08] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:09] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:09] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:10] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672175
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672175
+[INFO] [Account 1 (Player)] Connected to e - Baccarat C
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:11] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:12] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:12] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:13] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:14] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:15] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:16] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:16] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:17] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:18] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:18] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:19] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:19] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:19] "GET /api/status HTTP/1.1" 200 -
+[INFO] 🧪 [FRAG TEST] Starting websocket fragmentation test...
+[INFO] 🧪 [FRAG TEST] Target: e - Baccarat A | Pre-staging fragmented ₹50 Player bet...
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:20] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:20] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:21] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:21] "GET /api/status HTTP/1.1" 200 -
+[INFO] 🧪 [FRAG TEST] Fragment 1 (pre-staged) written to transport buffer
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:22] "GET /api/status HTTP/1.1" 200 -
+[INFO] 🧪 [FRAG TEST] Fragment 2 (1-byte trigger) written in 0.26ms
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:22] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:23] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:23] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:23] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:24] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:24] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:25] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:25] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:26] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:26] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:26] "GET /api/status HTTP/1.1" 200 -
+[INFO] 🧪 [FRAG TEST] 🧪 FRAGMENTATION TEST RESULT
+Table: e - Baccarat A
+Trigger write speed: 0.26ms
+Balance before: ₹200.00
+Balance after: ₹200.00
+Deducted: ₹0.00
+Ack status: []
+Verdict: ❌ Fragmented frame ignored/dropped. Server might not support fragmentation or proxy blocks it.
+[INFO] 🧪 [FRAG TEST] UNDO cleanup sent
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:26] "POST /api/test_fragmentation HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:27] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:27] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:28] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:28] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:29] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:29] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:30] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:30] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:30] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:31] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:31] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:32] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672189
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672189
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:32] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:33] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:33] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:33] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:34] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:34] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:35] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:36] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:36] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Player | P:0 B:0 | Win:{'outcome': 0, 'total': 0.0, 'results': []} | Round:81672198
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Player | P:0 B:0 | Win:{'outcome': 0, 'total': 0.0, 'results': []} | Round:81672198
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:37] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:37] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:37] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:38] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:38] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672199
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672199
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:39] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:39] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:40] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:40] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:40] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:41] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:42] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:43] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672205
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672205
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:44] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:44] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:45] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:46] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:47] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:47] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:48] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:49] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:50] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:51] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:51] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:52] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:53] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:54] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:54] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:55] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:56] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:57] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:58] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:58] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:18:59] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:00] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:01] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:01] "GET /api/logs HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:02] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:03] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:04] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:05] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:05] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672227
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672227
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:06] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672232
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672232
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:07] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:08] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:08] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:09] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:10] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672233
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672233
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:11] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:12] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:12] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:13] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:14] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:15] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:15] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:16] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:17] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672241
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672241
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:18] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:19] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:19] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:20] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:21] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:22] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:22] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:23] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:24] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:25] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:26] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:26] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:27] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:28] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:29] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:29] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:30] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:31] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:32] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:33] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:33] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:34] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:35] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:36] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:36] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672257
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672257
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:37] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:38] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:19:39] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672258
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672258
+[INFO] 🔄 PROXY FAILOVER: Switched to BACKUP proxy due to connection issue.
+[WARNING] [Account 2 (Banker)] WebSocket connection failed. Swapped to backup proxy.
+[WARNING] [Account 2 (Banker)] WS connection error for bc-15: no close frame received or sent
+[INFO] [Account 2 (Banker)] Reconnecting e - Baccarat D in 0.5s...
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672262
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672262
+[INFO] [Account 2 (Banker)] Connected to e - Baccarat D
+[INFO] [Account 2 (Banker)] [e - Baccarat D] Table limits parsed — Min: 50.00 | Max: 500000.00
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672267
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672267
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672287
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672287
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672290
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672290
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672298
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672298
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672305
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672305
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:20:37] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:20:37] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672317
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672317
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672320
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672320
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672332
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672332
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672335
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672335
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672349
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672349
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672356
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672356
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672357
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672357
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672365
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672365
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:21:37] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:21:37] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672377
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672377
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672387
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672387
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672395
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672395
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672398
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672398
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:10] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:10] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:10] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:10] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:11] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:11] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:12] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:12] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:13] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:13] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:14] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:14] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:15] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:16] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672413
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672413
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:17] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:17] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672420
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672420
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:18] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:19] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:20] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:21] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:21] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:22] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:23] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:24] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:24] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:25] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672421
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672421
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:26] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:27] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:28] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:28] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:29] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:30] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:31] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:31] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:32] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:33] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:34] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:35] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:35] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:36] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:37] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:38] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:38] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:39] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672438
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672438
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:40] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:41] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:42] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:42] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:43] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat C] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:44] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:45] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:45] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:46] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:47] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:48] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672447
+[INFO] [Account 2 (Banker)] [e - Baccarat D] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672447
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:49] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:49] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:50] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672446
+[INFO] [Account 1 (Player)] [e - Baccarat A] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672446
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:51] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:52] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:52] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:53] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:54] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:55] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:56] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:56] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:57] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672459
+[INFO] [Account 2 (Banker)] [e - Baccarat C] 🎯 RESULT: Tie | P:0 B:0 | Win:{'outcome': 2, 'total': 0.0, 'results': []} | Round:81672459
+[INFO] [Account 2 (Banker)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat B] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:58] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:59] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:22:59] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:00] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:01] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:02] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:03] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:03] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:04] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:05] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:06] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:06] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 1 (Player)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] [Account 2 (Banker)] [e - Baccarat D] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:07] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:08] "GET /api/status HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:09] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] [Account 1 (Player)] [e - Baccarat A] ✅ FRAME READY — betting window open
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:10] "GET /api/logs HTTP/1.1" 200 -
+[INFO] 127.0.0.1 - - [19/Jul/2026 03:23:10] "GET /api/status HTTP/1.1" 200 -
+[INFO] [Account 2 (Banker)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672470
+[INFO] [Account 1 (Player)] [e - Baccarat B] 🎯 RESULT: Banker | P:0 B:0 | Win:{'outcome': 1, 'total': 0.0, 'results': []} | Round:81672470

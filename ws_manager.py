@@ -1532,8 +1532,25 @@ class GlobalCoordinator:
                     if tok in acc2.tables:
                         acc2.tables[tok]['frame_ready'] = True
                 
-                # Step 2: Pre-resolve loops, transport writes, and frames (zero lookups in critical section)
-                firing_jobs = []
+                # Step 2: Pre-resolve loops, transports, and frames grouped by account with latency alignment
+                acc1_jobs = []
+                acc2_jobs = []
+                
+                # Fetch current latencies (RTTs)
+                latencies = {}
+                for tok, info in tables:
+                    lat1 = acc1.tables.get(tok, {}).get('latency', 40)
+                    lat2 = acc2.tables.get(tok, {}).get('latency', 40)
+                    latencies[(tok, 'acc1')] = 40 if lat1 <= 0 else int(lat1)
+                    latencies[(tok, 'acc2')] = 40 if lat2 <= 0 else int(lat2)
+                
+                # Calculate estimated one-way latency (RTT / 2) in seconds
+                one_ways = {k: (v / 2.0) / 1000.0 for k, v in latencies.items()}
+                max_one_way = max(one_ways.values()) if one_ways else 0.0
+                
+                # Calculate target delay for each connection to reach the server simultaneously
+                delays = {k: max_one_way - v for k, v in one_ways.items()}
+                
                 for tok, info in tables:
                     tname = info.get('name', tok[:8])
                     ws1 = acc1.tables.get(tok, {}).get('ws')
@@ -1542,18 +1559,37 @@ class GlobalCoordinator:
                     t2 = getattr(ws2, 'transport', None) if ws2 else None
                     
                     if t1 and acc1.loop:
-                        firing_jobs.append((acc1.loop, t1.write, prebuilt[(tok, 'acc1')], tname, 'Acc1'))
+                        d1 = delays.get((tok, 'acc1'), 0.0)
+                        acc1_jobs.append((t1, prebuilt[(tok, 'acc1')], tname, d1))
                     if t2 and acc2.loop:
-                        firing_jobs.append((acc2.loop, t2.write, prebuilt[(tok, 'acc2')], tname, 'Acc2'))
+                        d2 = delays.get((tok, 'acc2'), 0.0)
+                        acc2_jobs.append((t2, prebuilt[(tok, 'acc2')], tname, d2))
                 
-                # Step 3: Fire all pre-resolved jobs sequentially (GC frozen for zero interruption)
+                # Helper function executed inside the target loop's thread
+                # This writes all buffered frames with high-resolution spin-lock delay matching the latency alignment
+                def _write_batch(jobs):
+                    start = time.time()
+                    for transport, frame, tname_r, delay in jobs:
+                        # High-resolution spin-lock wait for microseconds level alignment
+                        while (time.time() - start) < delay:
+                            pass
+                        transport.write(frame)
+                
+                # Sort jobs by delay descending so we fire slow ones (delay=0) first, 
+                # then wait for the spin-lock delay before firing fast ones.
+                acc1_jobs.sort(key=lambda x: x[3], reverse=True)
+                acc2_jobs.sort(key=lambda x: x[3], reverse=True)
+                
+                # Step 3: Fire batch writes grouped by account (GC frozen for zero interruption)
                 fire_start = time.time()
                 send_failed = False
                 
                 gc.disable()
                 try:
-                    for loop, write_func, frame, _, _ in firing_jobs:
-                        loop.call_soon_threadsafe(write_func, frame)
+                    if acc1_jobs and acc1.loop:
+                        acc1.loop.call_soon_threadsafe(_write_batch, acc1_jobs)
+                    if acc2_jobs and acc2.loop:
+                        acc2.loop.call_soon_threadsafe(_write_batch, acc2_jobs)
                 except Exception as e:
                     logger.error(f"⚡ Firing loop execution failed: {e}")
                     send_failed = True
@@ -1561,16 +1597,19 @@ class GlobalCoordinator:
                     gc.enable()
                 
                 fire_elapsed = (time.time() - fire_start) * 1000
+                total_jobs = len(acc1_jobs) + len(acc2_jobs)
                 
-                # Check if we successfully queued all 4 bets (2 tables * 2 accounts = 4 jobs)
-                expected_jobs = len(tables) * 2  # 4 tables × 2 accounts = 8 jobs
-                if len(firing_jobs) < expected_jobs:
-                    logger.warning(f"⚡ Queue mismatch: only {len(firing_jobs)}/{expected_jobs} jobs pre-resolved!")
+                # Check if we successfully queued all jobs
+                expected_jobs = len(tables) * 2
+                if total_jobs < expected_jobs:
+                    logger.warning(f"⚡ Queue mismatch: only {total_jobs}/{expected_jobs} jobs pre-resolved!")
                     send_failed = True
                 
                 # Log timing and status
-                for _, _, _, tname_r, label_r in firing_jobs:
-                    logger.info(f"⚡ {label_r} [{tname_r}] queued via call_soon_threadsafe")
+                for _, _, tname_r, d_r in acc1_jobs:
+                    logger.info(f"⚡ Acc1 [{tname_r}] queued in batch write (offset: {d_r*1000:.1f}ms)")
+                for _, _, tname_r, d_r in acc2_jobs:
+                    logger.info(f"⚡ Acc2 [{tname_r}] queued in batch write (offset: {d_r*1000:.1f}ms)")
                 
                 if send_failed:
                     logger.warning(f"⚡ DIRECT WRITE FAILED ({fire_elapsed:.1f}ms) — undoing ALL")
@@ -1582,11 +1621,12 @@ class GlobalCoordinator:
                 
                 # Save fire timing for UI display
                 self.last_bet_result['fire_elapsed_ms'] = round(fire_elapsed, 1)
-                avg_ms = fire_elapsed / max(len(firing_jobs), 1)
-                self.last_bet_result['fire_details'] = [
-                    {'table': tname_r, 'account': label_r, 'ok': True, 'ms': round(avg_ms, 2)}
-                    for _, _, _, tname_r, label_r in firing_jobs
-                ]
+                avg_ms = fire_elapsed / max(total_jobs, 1)
+                self.last_bet_result['fire_details'] = []
+                for _, _, tname_r, _ in acc1_jobs:
+                    self.last_bet_result['fire_details'].append({'table': tname_r, 'account': 'Acc1', 'ok': True, 'ms': round(avg_ms, 2)})
+                for _, _, tname_r, _ in acc2_jobs:
+                    self.last_bet_result['fire_details'].append({'table': tname_r, 'account': 'Acc2', 'ok': True, 'ms': round(avg_ms, 2)})
 
                 # ══════════════════════════════════════════════════
                 # ⏱️ POLL FOR ALL 4 CONFIRMATIONS
@@ -2136,7 +2176,7 @@ class GlobalCoordinator:
                 "target": "Message", "type": 1
             }) + '\x1e'
             if self.account1.loop:
-                self.account1.loop.call_soon_threadsafe(ws.send, undo_payload)
+                asyncio.run_coroutine_threadsafe(ws.send(undo_payload), self.account1.loop)
                 logger.info(f"🧪 [STACK TEST] UNDO sent to clean up test bets")
         except Exception as e:
             logger.warning(f"🧪 [STACK TEST] UNDO cleanup failed: {e}")
@@ -2155,6 +2195,7 @@ class GlobalCoordinator:
                 "verdict": verdict
             }
         }
+
 
 
 # We no longer instantiate GlobalCoordinator here.

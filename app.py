@@ -626,6 +626,8 @@ def test_stack():
     result = coordinator.test_stack_bet()
     return jsonify(result)
 
+
+
 @app.route('/api/clear_cache', methods=['POST'])
 def clear_cache():
     coordinator = get_coordinator()
