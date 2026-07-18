@@ -29,10 +29,10 @@ import os, socket as _socket
 _PROXY_PRIMARY = "http://59c5680fcd9f590f2857__cr.in:523d198218fc4642@gw.dataimpulse.com:823"
 _PROXY_BACKUP  = "http://59c5680fcd9f590f2857__cr.in:523d198218fc4642@gw.dataimpulse.com:823"
 
-PROXY_URL = None
-BACKUP_PROXY_URL = None
+PROXY_URL = _PROXY_PRIMARY
+BACKUP_PROXY_URL = _PROXY_BACKUP
 import logging as _log
-_log.getLogger("config").info("🇫🇷 French VPS detected — proxy DISABLED (direct lightning fast connection)")
+_log.getLogger("config").info("🇫🇷 French VPS detected — proxy ENABLED for Cricmatch (Lobby) login")
 
 CURRENT_PROXY_URL = PROXY_URL
 

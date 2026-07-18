@@ -344,8 +344,8 @@ class BaccaratManager:
         
         jwt_token = None
         try:
-            proxy_url = config.get_current_proxy(getattr(self, "proxy_session_id", None))
-            proxies = {"http": proxy_url, "https": proxy_url} if proxy_url else None
+            # 7Mojos lobby does not require proxy on French VPS (direct is faster)
+            proxies = None
             resp_auth = requests.get(auth_url, params=auth_params, headers=config.HEADERS, proxies=proxies, timeout=10)
             if resp_auth.status_code == 200:
                 jwt_token = resp_auth.json().get('token')
@@ -367,8 +367,8 @@ class BaccaratManager:
         headers["Authorization"] = f"Basic {jwt_token}"
         
         try:
-            proxy_url = config.get_current_proxy(getattr(self, "proxy_session_id", None))
-            proxies = {"http": proxy_url, "https": proxy_url} if proxy_url else None
+            # 7Mojos lobby does not require proxy on French VPS
+            proxies = None
             resp = requests.get(url, headers=headers, proxies=proxies, timeout=10)
             if resp.status_code == 200:
                 games = resp.json()
@@ -462,8 +462,8 @@ class BaccaratManager:
         max_retries = 3
         for attempt in range(1, max_retries + 1):
             try:
-                proxy_url = config.get_current_proxy(getattr(self, "proxy_session_id", None))
-                proxies = {"http": proxy_url, "https": proxy_url} if proxy_url else None
+                # 7Mojos game servers do NOT block European IPs (direct is faster & avoids country block)
+                proxies = None
                 resp = requests.post(url, json=payload, headers=config.HEADERS, proxies=proxies, timeout=10)
                 if resp.status_code == 200:
                     data = resp.json()
@@ -549,8 +549,8 @@ class BaccaratManager:
         neg_url = f"{config.LCE_BASE_URL}/wssr/player/negotiate"
         neg_params = {"access_token": access_token}
         try:
-            proxy_url = config.get_current_proxy(getattr(self, "proxy_session_id", None))
-            proxies = {"http": proxy_url, "https": proxy_url} if proxy_url else None
+            # 7Mojos negotiate does NOT require proxy on French VPS
+            proxies = None
             neg_resp = await loop.run_in_executor(
                 _executor,
                 lambda: requests.post(neg_url, params=neg_params, headers=config.HEADERS, proxies=proxies, timeout=10)
@@ -1896,10 +1896,10 @@ class GlobalCoordinator:
         # Trigger immediate check
         self.check_auto_bet()
         
-        # Start continuous hunting loop — scans every 500ms like a hawk
+        # Start continuous hunting loop — scans every 100ms like a hawk
         self._start_hunting()
         
-        logger.info(f"🎯 AUTO-BET ARMED ({mode.upper()}: {amount:.0f} Rs) — Hunter active, scanning every 500ms")
+        logger.info(f"🎯 AUTO-BET ARMED ({mode.upper()}: {amount:.0f} Rs) — Hunter active, scanning every 100ms")
         return {"success": True, "message": f"Dual Auto-Bet armed ({mode.upper()}: {amount:.0f} Rs)! Hunting for tables..."}
 
     def _start_hunting(self):
@@ -1915,16 +1915,16 @@ class GlobalCoordinator:
         self._hunting_active = False
     
     def _hunter_loop(self):
-        """Continuous scan loop — checks every 500ms while armed.
+        """Continuous scan loop — checks every 100ms while armed.
         Like a hawk waiting to pounce the INSTANT 2 tables are ready."""
-        logger.info("🦅 Hunter loop STARTED — scanning every 500ms")
+        logger.info("🦅 Hunter loop STARTED — scanning every 100ms")
         while self._hunting_active and self.auto_bet_requested:
             self.check_auto_bet()
             # If bet was placed, stop hunting
             if self.bet_state == "placing" or self.bet_state == "placed":
                 logger.info("🦅 Hunter loop STOPPED — bet fired!")
                 return
-            time.sleep(0.5)  # 500ms scan interval
+            time.sleep(0.1)  # 100ms scan interval
         logger.info("🦅 Hunter loop STOPPED — disarmed or completed")
 
     def disarm_auto_bet(self):
