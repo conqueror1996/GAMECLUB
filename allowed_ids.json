@@ -1,0 +1,15 @@
+{
+  "access_ids": {
+    "DH-KEY-ADMIN1": {
+      "label": "Master Admin Key",
+      "status": "active",
+      "created_at": 1721112345
+    },
+    "DH-KEY-USER1": {
+      "label": "First User Client",
+      "status": "active",
+      "created_at": 1721112345
+    }
+  },
+  "admin_secret": "dualhedge_secret_99"
+}

@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+bet_history.json
+.DS_Store
+scratch/
