@@ -184,6 +184,14 @@ class BaccaratManager:
             }
         logger.info(f"[{self.name}] Rotated proxy session to {self.proxy_session_id} to bypass IP block/geographic restrictions.")
 
+    @staticmethod
+    def _log_raw_frame(direction, account_name, table_token, text):
+        try:
+            with open("ws_raw_frames.log", "a") as f:
+                f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [{direction}] [{account_name}] [{table_token}] {text.strip()}\n")
+        except Exception:
+            pass
+
     def perform_login(self, base_url, username, password):
         self._username = username
         self._password = password
@@ -647,12 +655,15 @@ class BaccaratManager:
                 latency_task = asyncio.create_task(self._latency_ping_loop(game_token, ws))
                 
                 try:
+                    BaccaratManager._log_raw_frame("-->", self.name, game_token, '{"protocol":"json","version":1}\x1e')
                     await ws.send('{"protocol":"json","version":1}\x1e')
+                    BaccaratManager._log_raw_frame("-->", self.name, game_token, '{"arguments":[],"invocationId":"0","target":"Ready","type":1}\x1e')
                     await ws.send('{"arguments":[],"invocationId":"0","target":"Ready","type":1}\x1e')
                     
                     async for message in ws:
                         if not self.running:
                             break
+                        BaccaratManager._log_raw_frame("<--", self.name, game_token, message)
                         messages = message.split('\x1e')
                         for msg in messages:
                             if not msg or msg == '{}':
@@ -1223,9 +1234,13 @@ class BaccaratManager:
                 name = "Unknown"
 
             try:
+                # Resolve token
+                tok = target if isinstance(target, str) else (getattr(ws, 'game_token', 'unknown_tok') if ws else 'unknown_tok')
                 if ws and getattr(ws, 'open', True):
                     # Send BOTH undo formats for maximum reliability
+                    BaccaratManager._log_raw_frame("-->", self.name, tok, f"[UNDO type:7] {undo_type7_msg}")
                     await ws.send(undo_type7_msg)
+                    BaccaratManager._log_raw_frame("-->", self.name, tok, f"[UNDO clear] {undo_clear_msg}")
                     await ws.send(undo_clear_msg)
                     logger.info(f"[{self.name}] [{name}] ↩️ UNDO sent (type:7 + empty bets clear)")
                     return {"table": name, "status": "undo_sent", "error": None}

@@ -22,17 +22,11 @@ TELEGRAM_CHAT_ID = ""   # Your personal chat ID, to receive alerts
 TELEGRAM_ENABLED = True # Global toggle to turn the bot polling on/off
 
 # ── Proxy Configuration ──
-# On India VPS: proxy is NOT needed (direct Indian IP).
-# On Render (USA): proxy IS needed for geo-bypass.
-# Auto-detect via hostname or env var.
-import os, socket as _socket
-_PROXY_PRIMARY = "http://59c5680fcd9f590f2857__cr.in:523d198218fc4642@gw.dataimpulse.com:823"
-_PROXY_BACKUP  = "http://59c5680fcd9f590f2857__cr.in:523d198218fc4642@gw.dataimpulse.com:823"
-
-PROXY_URL = _PROXY_PRIMARY
-BACKUP_PROXY_URL = _PROXY_BACKUP
+# Brightdata ISP Proxy configuration
+PROXY_URL = "http://brd-customer-hl_a5cf638e-zone-isp_proxy1:f54kwk6bb5ve@brd.superproxy.io:33335"
+BACKUP_PROXY_URL = "http://brd-customer-hl_a5cf638e-zone-isp_proxy1:f54kwk6bb5ve@brd.superproxy.io:33335"
 import logging as _log
-_log.getLogger("config").info("🇫🇷 French VPS detected — proxy ENABLED for Cricmatch (Lobby) login")
+_log.getLogger("config").info("⚙️ Brightdata Proxy configured and ENABLED")
 
 CURRENT_PROXY_URL = PROXY_URL
 
