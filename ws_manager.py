@@ -1473,20 +1473,28 @@ class GlobalCoordinator:
             elapsed1 = now - info.get('betting_opened_at', 0)
             elapsed2 = now - self.account2.tables[token].get('betting_opened_at', 0)
 
-            # ═══ DUAL-SYNC FRESHNESS RULE ═══
-            # Both accounts must see window opened within the last 3.1s
-            # AND the sync delta between Account 1 & Account 2 must be <= 0.6s
-            if elapsed1 > 3.1 or elapsed2 > 3.1:
-                skip_reasons[tname] = f"not fresh enough: Acc1={elapsed1:.1f}s, Acc2={elapsed2:.1f}s (>3.1s)"
+            # Calculate remaining time from countdown (15s total betting window)
+            rem1 = max(15.0 - elapsed1, 0)
+            rem2 = max(15.0 - elapsed2, 0)
+
+            # ═══ LAST 5 SECONDS COUNTDOWN TARGET ═══
+            # Wait until countdown is between 3.5s and 5.2s remaining to exploit server database traffic jam/load
+            if rem1 > 5.2 or rem2 > 5.2:
+                skip_reasons[tname] = f"waiting for last 5s countdown: Acc1={rem1:.1f}s, Acc2={rem2:.1f}s"
                 continue
 
-            sync_delta = abs(elapsed1 - elapsed2)
-            if sync_delta > 0.6:
-                skip_reasons[tname] = f"sync delta too high: {sync_delta:.2f}s (>0.6s)"
+            # Skip if it is too late (below 3.5s) to avoid missing the window due to network transmission delay
+            if rem1 < 3.5 or rem2 < 3.5:
+                skip_reasons[tname] = f"too late for safe fire: Acc1={rem1:.1f}s, Acc2={rem2:.1f}s (<3.5s)"
                 continue
 
-            worst_elapsed = max(elapsed1, elapsed2)
-            remaining = max(15.0 - worst_elapsed, 0)  # Andar Bahar has 15s timer
+            # Check sync delta between Account 1 & Account 2 to ensure they are on the same page
+            sync_delta = abs(rem1 - rem2)
+            if sync_delta > 0.8:
+                skip_reasons[tname] = f"sync delta too high: {sync_delta:.2f}s (>0.8s)"
+                continue
+
+            remaining = min(rem1, rem2)
             valid_tables.append((token, info, remaining))
 
         # ═══ PRE-CHECK: BOTH TWIN TABLES MUST BE CONNECTED ═══
@@ -1842,26 +1850,9 @@ class GlobalCoordinator:
                     bets[idx]['status'] = ack1 if ack1 in ('confirmed', 'rejected') else 'sent'
                     bets[idx + 2]['status'] = ack2 if ack2 in ('confirmed', 'rejected') else 'sent'
 
-                confirmed_acc1 = [info.get('name', tok[:8]) for tok, info in tables if acc1.pending_bet_acks.get(tok, {}).get('status') == 'confirmed']
-                confirmed_acc2 = [info.get('name', tok[:8]) for tok, info in tables if acc2.pending_bet_acks.get(tok, {}).get('status') == 'confirmed']
-                
-                is_cross_hedged = False
-                if not all_confirmed and len(confirmed_acc1) == 1 and len(confirmed_acc2) == 1:
-                    is_cross_hedged = True
-                    # Preventative clear on the unconfirmed/pending tables to avoid late confirmations
-                    unconfirmed_targets_acc1 = [tok for tok, _ in tables if acc1.pending_bet_acks.get(tok, {}).get('status') != 'confirmed']
-                    unconfirmed_targets_acc2 = [tok for tok, _ in tables if acc2.pending_bet_acks.get(tok, {}).get('status') != 'confirmed']
-                    if unconfirmed_targets_acc1 and acc1.loop:
-                        asyncio.run_coroutine_threadsafe(acc1._undo_bets_async(unconfirmed_targets_acc1), acc1.loop)
-                    if unconfirmed_targets_acc2 and acc2.loop:
-                        asyncio.run_coroutine_threadsafe(acc2._undo_bets_async(unconfirmed_targets_acc2), acc2.loop)
-
-                if all_confirmed or is_cross_hedged:
-                    if all_confirmed:
-                        logger.info(f"✅✅ HEDGE SAFE: All 4 bets confirmed on {[i.get('name') for _,i in tables]}")
-                    else:
-                        logger.info(f"✅✅ CROSS-TABLE HEDGE SAFE: Acc1 on {confirmed_acc1[0]} (Andar) & Acc2 on {confirmed_acc2[0]} (Bahar) confirmed! Keeping the hedge.")
-                    
+                if all_confirmed:
+                    # ✅ ALL 4 CONFIRMED — SAFE!
+                    logger.info(f"✅✅ HEDGE SAFE: All 4 bets confirmed on {[i.get('name') for _,i in tables]}")
                     self.bet_state = "placed"
                     tbl_names = [info.get('name', tok[:8]) for tok, info in tables]
                     self.last_bet_result = {
