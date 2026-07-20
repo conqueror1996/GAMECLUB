@@ -1679,14 +1679,9 @@ class GlobalCoordinator:
                     bet_payloads[(tok, 'acc2')] = payload2
                 
                 # ══════════════════════════════════════════════════════════════
-                # 🚀 RACE-CONDITION OPTIMIZED FIRE: transport.write() RAW BLAST
-                # ──────────────────────────────────────────────────────────────
-                # ws.send() goes through asyncio event loop queue = ~0.5-1ms gap
-                # transport.write() writes DIRECTLY to kernel TCP send buffer = ~0.01ms
-                # This minimizes the window for the server to deduct balance between bets
-                #
-                # INTERLEAVED ORDER: For each table, fire Acc1+Acc2 together
-                # so the server processes both accounts on Table1 before Table2
+                # PER-ACCOUNT BLAST: Fire same account on BOTH tables back-to-back
+                # This maximizes race window: server sees Acc1-Table1 + Acc1-Table2
+                # within microseconds, both balance checks happen before either deduction
                 # ══════════════════════════════════════════════════════════════
                 fire_start = time.time()
                 send_failed = False
@@ -1714,41 +1709,60 @@ class GlobalCoordinator:
                     return bytes(frame)
                 
                 try:
-                    # INTERLEAVED FIRE: For each table, blast Acc1 + Acc2 back-to-back
+                    # ── PHASE 1: PRE-BUILD ALL 4 FRAMES (zero delay during fire) ──
+                    frames = {}  # (tok, acc_key) → (transport, frame)
+                    all_transports_ok = True
+                    
                     for tok, info in tables:
                         tname = info.get('name', tok[:8])
                         ws1 = acc1.tables.get(tok, {}).get('ws')
                         ws2 = acc2.tables.get(tok, {}).get('ws')
-                        
-                        # Try transport.write() first (raw TCP blast)
                         t1 = getattr(ws1, 'transport', None) if ws1 else None
                         t2 = getattr(ws2, 'transport', None) if ws2 else None
                         
-                        p1 = bet_payloads[(tok, 'acc1')]
-                        p2 = bet_payloads[(tok, 'acc2')]
-                        
                         if t1 and t2:
-                            # RAW BLAST: both accounts on same table within ~0.01ms
-                            frame1 = _build_ws_frame(p1)
-                            frame2 = _build_ws_frame(p2)
-                            
-                            if acc1.loop:
-                                acc1.loop.call_soon_threadsafe(t1.write, frame1)
-                            else:
-                                t1.write(frame1)
-                            
-                            if acc2.loop:
-                                acc2.loop.call_soon_threadsafe(t2.write, frame2)
-                            else:
-                                t2.write(frame2)
-                            
-                            logger.info(f"⚡ Acc1+Acc2 [{tname}] bet BLASTED via transport.write()")
-                            total_jobs += 2
-                            fire_details.append({'table': tname, 'account': 'Acc1', 'ok': True, 'method': 'transport.write'})
-                            fire_details.append({'table': tname, 'account': 'Acc2', 'ok': True, 'method': 'transport.write'})
+                            frames[(tok, 'acc1')] = (t1, _build_ws_frame(bet_payloads[(tok, 'acc1')]))
+                            frames[(tok, 'acc2')] = (t2, _build_ws_frame(bet_payloads[(tok, 'acc2')]))
                         else:
-                            # FALLBACK: ws.send() through asyncio (slower but safe)
-                            logger.warning(f"⚠️ [{tname}] No transport — falling back to ws.send()")
+                            logger.warning(f"⚠️ [{tname}] Missing transport: t1={t1 is not None}, t2={t2 is not None}")
+                            all_transports_ok = False
+                    
+                    if all_transports_ok and len(frames) == expected_jobs:
+                        # ── PHASE 2: FIRE IN PER-ACCOUNT ORDER ──
+                        # Acc1 on ALL tables first (back-to-back, ~0.01ms apart)
+                        # Then Acc2 on ALL tables (back-to-back, ~0.01ms apart)
+                        # This creates the widest race window for each account's duplicate bets
+                        
+                        table_tokens = [tok for tok, _ in tables]
+                        table_names = {tok: info.get('name', tok[:8]) for tok, info in tables}
+                        
+                        # ──── BLAST ACC1 on both tables ────
+                        for tok in table_tokens:
+                            transport, frame = frames[(tok, 'acc1')]
+                            transport.write(frame)  # Direct write, no call_soon_threadsafe
+                        
+                        # ──── BLAST ACC2 on both tables (microseconds later) ────
+                        for tok in table_tokens:
+                            transport, frame = frames[(tok, 'acc2')]
+                            transport.write(frame)  # Direct write, no call_soon_threadsafe
+                        
+                        total_jobs = expected_jobs
+                        for tok in table_tokens:
+                            tname = table_names[tok]
+                            fire_details.append({'table': tname, 'account': 'Acc1', 'ok': True, 'method': 'transport.write_direct'})
+                            fire_details.append({'table': tname, 'account': 'Acc2', 'ok': True, 'method': 'transport.write_direct'})
+                        
+                        logger.info(f"⚡ PER-ACCOUNT BLAST: Acc1→[{','.join(table_names[t] for t in table_tokens)}] then Acc2→[{','.join(table_names[t] for t in table_tokens)}] via direct transport.write()")
+                    
+                    else:
+                        # FALLBACK: ws.send() through asyncio (slower but safe)
+                        logger.warning(f"⚠️ Falling back to ws.send() for {len(tables)} tables")
+                        for tok, info in tables:
+                            tname = info.get('name', tok[:8])
+                            ws1 = acc1.tables.get(tok, {}).get('ws')
+                            ws2 = acc2.tables.get(tok, {}).get('ws')
+                            p1 = bet_payloads[(tok, 'acc1')]
+                            p2 = bet_payloads[(tok, 'acc2')]
                             futures = []
                             
                             async def _send_bet(ws_obj, payload_str):
@@ -1786,7 +1800,7 @@ class GlobalCoordinator:
                     self._abort_and_rearm(bets, tables, "Blast fire failed")
                     return
 
-                logger.info(f"🚀 All {total_jobs} bets BLASTED via transport.write() in {fire_elapsed:.3f}ms! Waiting for confirmation...")
+                logger.info(f"🚀 All {total_jobs} bets BLASTED in {fire_elapsed:.3f}ms! Waiting for confirmation...")
                 
                 # Save fire timing for UI display
                 self.last_bet_result['fire_elapsed_ms'] = round(fire_elapsed, 3)
@@ -1795,16 +1809,17 @@ class GlobalCoordinator:
                 # ══════════════════════════════════════════════════
                 # ⏱️ POLL FOR ALL 4 CONFIRMATIONS
                 # ══════════════════════════════════════════════════
-                # Andar Bahar confirmations can take 1-3s through proxy.
-                # Old 900ms window caused false HEDGE BROKEN events.
-                max_polls = 20  # 20 × 150ms = 3s max
+                # CRITICAL: Twin tables share the same backend. Confirmations can
+                # take 2-6s depending on server load. Previous 3s timeout caused
+                # 14/16 false "HEDGE BROKEN" events when bets were actually confirmed.
+                max_polls = 60  # 60 × 150ms = 9s max polling
                 fire_time = time.time()
                 all_confirmed = False
 
                 for poll in range(max_polls):
                     time.sleep(0.15)
 
-                    if time.time() - fire_time > 4.0:
+                    if time.time() - fire_time > 10.0:
                         logger.warning(f"⏰ HARD DEADLINE reached ({time.time()-fire_time:.1f}s)")
                         break
 
@@ -1824,8 +1839,13 @@ class GlobalCoordinator:
                         if ack1 == 'pending' or ack2 == 'pending':
                             all_done = False
 
+                    # Log progress every 1.5s so we can see what's happening
+                    if (poll + 1) % 10 == 0:
+                        elapsed = time.time() - fire_time
+                        logger.info(f"⏳ Poll #{poll+1} ({elapsed:.1f}s): {statuses}")
+
                     if any_rejected:
-                        logger.warning(f"❌ REJECTION detected: {statuses}")
+                        logger.warning(f"❌ REJECTION detected at poll #{poll+1}: {statuses}")
                         break
 
                     if all_done:
