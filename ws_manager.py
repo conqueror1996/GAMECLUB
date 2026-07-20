@@ -1721,35 +1721,27 @@ class GlobalCoordinator:
                     if ws2 and acc2.loop:
                         acc2_ws_jobs.append((ws2, bet_payloads[(tok, 'acc2')], tname))
                 
-                # Step 3: Fire via ws.send() through asyncio — proper framing through proxy
+                # Step 3: Fire via ws.send() — asyncio.gather() for TRUE simultaneous send
                 fire_start = time.time()
                 send_failed = False
-                futures = []
                 
-                async def _send_bet(ws_obj, payload_str, account_label, tname_label):
-                    BaccaratManager._log_raw_frame("-->", account_label, tname_label, payload_str)
-                    await ws_obj.send(payload_str)
+                async def _fire_batch(jobs, account_label):
+                    """Fire all table bets on this account's loop simultaneously via gather()."""
+                    async def _one(ws_obj, payload_str, tname_label):
+                        BaccaratManager._log_raw_frame("-->", account_label, tname_label, payload_str)
+                        await ws_obj.send(payload_str)
+                    await asyncio.gather(*[_one(ws, p, t) for ws, p, t in jobs])
                 
                 try:
-                    # Fire all Account 1 bets
-                    for ws_obj, payload_str, tname_r in acc1_ws_jobs:
-                        fut = asyncio.run_coroutine_threadsafe(_send_bet(ws_obj, payload_str, acc1.name, tname_r), acc1.loop)
-                        futures.append((fut, f"Acc1-{tname_r}"))
+                    # Fire BOTH loops in parallel — gather() inside each loop fires both tables simultaneously
+                    fut1 = asyncio.run_coroutine_threadsafe(_fire_batch(acc1_ws_jobs, acc1.name), acc1.loop)
+                    fut2 = asyncio.run_coroutine_threadsafe(_fire_batch(acc2_ws_jobs, acc2.name), acc2.loop)
                     
-                    # Fire all Account 2 bets
-                    for ws_obj, payload_str, tname_r in acc2_ws_jobs:
-                        fut = asyncio.run_coroutine_threadsafe(_send_bet(ws_obj, payload_str, acc2.name, tname_r), acc2.loop)
-                        futures.append((fut, f"Acc2-{tname_r}"))
-                    
-                    # Wait for all sends to complete (max 2s)
-                    for fut, label in futures:
-                        try:
-                            fut.result(timeout=2.0)
-                        except Exception as e:
-                            logger.error(f"⚡ Send failed for {label}: {e}")
-                            send_failed = True
+                    # Wait for both loops to complete (max 2s)
+                    fut1.result(timeout=2.0)
+                    fut2.result(timeout=2.0)
                 except Exception as e:
-                    logger.error(f"⚡ Firing loop execution failed: {e}")
+                    logger.error(f"⚡ Firing failed: {e}")
                     send_failed = True
                 
                 fire_elapsed = (time.time() - fire_start) * 1000
