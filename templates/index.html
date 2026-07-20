@@ -1494,6 +1494,9 @@
                             Cancel
                         </button>
                     </div>
+                    <button id="undo-btn" class="btn" onclick="manualUndoBet()" title="↩️ Send Undo command to all tables for both accounts" style="padding:8px 16px; font-weight:bold; background: #ea580c; color: white; border: none; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                        ↩️ Undo Bet
+                    </button>
                     <button class="btn btn-outline" onclick="clearCache()" title="Clear all results, history, and cached data" style="padding:8px 12px;">
                         🗑️
                     </button>
@@ -2040,6 +2043,25 @@
                 toast('Auto-Bet Cancelled', 'Click Arm when ready to activate.', 'info', 3000);
             }
         } catch(e) {}
+    }
+
+    async function manualUndoBet() {
+        const btn = document.getElementById('undo-btn');
+        if (btn) btn.disabled = true;
+        try {
+            const res  = await fetch('/api/undo', { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                applyBetState('idle', null);
+                toast('↩️ Undo Sent', data.message || 'Undo command sent to all tables.', 'info', 4000);
+            } else {
+                toast('Undo Warning', data.message || 'Failed to send undo', 'warning', 4000);
+            }
+        } catch(e) {
+            toast('Undo Error', e.message, 'error', 4000);
+        } finally {
+            if (btn) btn.disabled = false;
+        }
     }
 
     async function clearCache() {

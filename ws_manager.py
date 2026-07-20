@@ -1982,7 +1982,34 @@ class GlobalCoordinator:
         logger.info(f"🔄 Aborted ({reason}) — re-arming for next round...")
         self.auto_bet_requested = True
         self.bet_state = "armed"
-        self._start_hunting()
+    def manual_undo_bets(self):
+        """Manually trigger UNDO command on all connected tables for both accounts."""
+        logger.info("↩️ MANUAL UNDO REQUESTED BY USER")
+        acc1 = self.account1
+        acc2 = self.account2
+        
+        # Get all connected table tokens across both accounts
+        tokens = list(set(list(acc1.tables.keys()) + list(acc2.tables.keys())))
+        tables = []
+        for tok in tokens:
+            info = acc1.tables.get(tok) or acc2.tables.get(tok) or {}
+            tables.append((tok, info))
+        
+        if not tokens:
+            logger.warning("↩️ Manual undo requested but no connected tables found!")
+            return {"success": False, "message": "No active tables connected to send undo."}
+        
+        # Execute raw UNDO blast across all tables for both accounts
+        self._undo_all_tables(acc1, acc2, tokens, tables, 0, acc1.balance, acc2.balance)
+        self.auto_bet_requested = False
+        self.bet_state = "idle"
+        self.last_bet_result = {
+            "type": "undone",
+            "reason": "Manual Undo Triggered by User",
+            "bets": []
+        }
+        logger.info(f"✅ MANUAL UNDO COMPLETE — sent undo commands to {len(tokens)} table(s)")
+        return {"success": True, "message": f"↩️ Undo command sent to {len(tokens)} table(s) for both accounts!"}
 
     def _undo_all_tables(self, acc1, acc2, tokens, tables, bet_amt, bal1_bef, bal2_bef):
         """Undo bets on ALL tables: instant blast first, then retry+verify."""
