@@ -1898,9 +1898,10 @@ class GlobalCoordinator:
                         "bets": bets, "hedge_status": "partial",
                         "reason": f"Partial: {status_summary}"
                     }
-                    logger.info("🔄 Auto re-arming for next round (connections preserved)...")
-                    self.auto_bet_requested = True
-                    self.bet_state = "armed"
+                    logger.info("⏹️ Partial confirmation — going idle. Press Arm to bet again.")
+                    self.auto_bet_requested = False
+                    self.bet_state = "idle"
+                    self._stop_hunting()
 
               except Exception as e:
                 logger.error(f"🚨 CRITICAL: _fire_and_verify_all CRASHED: {e}")
@@ -1927,9 +1928,10 @@ class GlobalCoordinator:
             "bets": bets, "hedge_status": "aborted",
             "reason": reason
         }
-        logger.info(f"🔄 Aborted ({reason}) — re-arming for next round...")
-        self.auto_bet_requested = True
-        self.bet_state = "armed"
+        logger.info(f"⏹️ Aborted ({reason}) — going idle. Press Arm to bet again.")
+        self.auto_bet_requested = False
+        self.bet_state = "idle"
+        self._stop_hunting()
 
 
 
