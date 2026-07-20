@@ -1576,35 +1576,52 @@ class GlobalCoordinator:
             reasons_str = " | ".join(f"{k}: {v}" for k, v in skip_reasons.items())
             logger.debug(f"🔍 Table scan: {len(valid_tables)} valid, {len(skip_reasons)} skipped [{reasons_str}]")
         
-        if len(valid_tables) >= 2:
-            if self.account1.balance < 90 or self.account2.balance < 90:
-                logger.warning("Insufficient balance in one or both accounts (minimum ₹90 required).")
+        if len(valid_tables) >= 1:
+            low_balance = min(self.account1.balance, self.account2.balance)
+            CHIP_STEP = 90.0
+            total_chips = int(low_balance // CHIP_STEP)
+
+            if total_chips < 1:
+                logger.warning(f"Insufficient balance in low-balance account (Acc1={self.account1.balance:.2f}, Acc2={self.account2.balance:.2f}). Minimum ₹90 required.")
                 self.auto_bet_requested = False
                 self.bet_state = "idle"
                 return
-                
-            target_tables = valid_tables[:2]
-            
-            # Target bet size calculation based on bet_mode
-            t1_token, t1_info = target_tables[0]
-            t2_token, t2_info = target_tables[1]
-            t1_max = t1_info.get('max_bet', 900000.0)
-            t2_max = self.account2.tables.get(t2_token, {}).get('max_bet', 900000.0)
-            max_allowed_bet = min(t1_max, t2_max)
 
-            # 🔥 RACE CONDITION BYPASS: Send full bet amount to BOTH tables simultaneously
-            effective_balance = min(self.account1.balance, self.account2.balance)
-
-            # Andar Bahar minimum chip is ₹90 (chips: 90, 180, 450, 900...)
-            CHIP_STEP = 90.0
+            # Determine number of tables to target based on low balance capacity
             if self.bet_mode == 'fixed':
-                base_bet = float((int(self.bet_target_amount) // int(CHIP_STEP)) * CHIP_STEP)
-                max_possible_bet = float((int(effective_balance) // int(CHIP_STEP)) * CHIP_STEP)
-                bet_amount = min(base_bet, max_possible_bet, max_allowed_bet)
-            else:  # auto
-                base_bet = float((int(effective_balance) // int(CHIP_STEP)) * CHIP_STEP)
-                bet_amount = min(base_bet, max_allowed_bet)
+                req_bet = float((int(self.bet_target_amount) // int(CHIP_STEP)) * CHIP_STEP)
+                if len(valid_tables) >= 2 and low_balance >= (req_bet * 2):
+                    num_target_tables = 2
+                    bet_amount = req_bet
+                elif low_balance >= req_bet:
+                    num_target_tables = 1
+                    bet_amount = req_bet
+                else:
+                    logger.warning(f"Low-balance account ({low_balance:.2f} Rs) cannot afford fixed bet amount {req_bet:.2f} Rs.")
+                    self.auto_bet_requested = False
+                    self.bet_state = "idle"
+                    return
+            else:  # auto / max balance
+                if len(valid_tables) >= 2 and total_chips >= 2:
+                    num_target_tables = 2
+                    chips_per_table = total_chips // 2
+                    bet_amount = float(chips_per_table * CHIP_STEP)
+                else:
+                    num_target_tables = 1
+                    bet_amount = float(total_chips * CHIP_STEP)
+
+            target_tables = valid_tables[:num_target_tables]
             
+            # Apply table max limits
+            t1_token, t1_info = target_tables[0]
+            max_allowed_bet = t1_info.get('max_bet', 900000.0)
+            if len(target_tables) > 1:
+                t2_token, t2_info = target_tables[1]
+                t2_max = self.account2.tables.get(t2_token, {}).get('max_bet', 900000.0)
+                max_allowed_bet = min(max_allowed_bet, t2_max)
+
+            bet_amount = min(bet_amount, max_allowed_bet)
+
             if bet_amount < CHIP_STEP:
                 logger.warning(f"Calculated bet amount {bet_amount:.2f} is below minimum chip size {CHIP_STEP}. Skipping round.")
                 self.auto_bet_requested = False
@@ -1615,15 +1632,16 @@ class GlobalCoordinator:
             bal2_before = self.account2.balance
             table_names = [info.get('name', token[:8]) for token, info in target_tables]
             
-            logger.info(f"🏦 Auto-Bet Sizing: Acc1={self.account1.balance:.2f} Acc2={self.account2.balance:.2f} | Hedge Bet={bet_amount:.2f} (Max limit: {max_allowed_bet:.2f})")
+            logger.info(f"🏦 Low-Balance Priority Sizing: Acc1={self.account1.balance:.2f} Acc2={self.account2.balance:.2f} | Low Balance={low_balance:.2f} | Firing on {len(target_tables)} table(s) | Bet={bet_amount:.2f}/table")
 
             # Build individual bet objects for UI tracking
-            individual_bets = [
-                {"id": 0, "account": "Account 1", "bet_on": "Andar", "table": table_names[0], "amount": bet_amount, "status": "placing", "error": None},
-                {"id": 1, "account": "Account 1", "bet_on": "Andar", "table": table_names[1], "amount": bet_amount, "status": "placing", "error": None},
-                {"id": 2, "account": "Account 2", "bet_on": "Bahar", "table": table_names[0], "amount": bet_amount, "status": "placing", "error": None},
-                {"id": 3, "account": "Account 2", "bet_on": "Bahar", "table": table_names[1], "amount": bet_amount, "status": "placing", "error": None},
-            ]
+            individual_bets = []
+            bet_id = 0
+            for tbl_name in table_names:
+                individual_bets.append({"id": bet_id, "account": "Account 1", "bet_on": "Andar", "table": tbl_name, "amount": bet_amount, "status": "placing", "error": None})
+                bet_id += 1
+                individual_bets.append({"id": bet_id, "account": "Account 2", "bet_on": "Bahar", "table": tbl_name, "amount": bet_amount, "status": "placing", "error": None})
+                bet_id += 1
 
             self.bet_state = "placing"
             self.last_bet_result = {
