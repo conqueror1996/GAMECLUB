@@ -2162,7 +2162,7 @@
             armBtn.classList.add('btn-placing');
             armInner.innerHTML = `<span class="dots"><i></i><i></i><i></i></span>&nbsp; Placing Bets`;
             armBtn.disabled = true;
-            disarmBtn.style.display = 'none';
+            disarmBtn.style.display = 'inline-flex';
 
             const bets  = result?.bets || [];
             const b1    = result?.bet1?.toFixed(2) || '—';
@@ -2199,7 +2199,7 @@
             armBtn.classList.add('btn-placed');
             armInner.innerHTML = 'Bets Placed';
             armBtn.disabled = true;
-            disarmBtn.style.display = 'none';
+            disarmBtn.style.display = 'inline-flex';
 
             const bets   = result?.bets || [];
             const b1     = result?.bet1?.toFixed(2) || '—';
