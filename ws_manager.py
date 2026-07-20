@@ -1842,9 +1842,26 @@ class GlobalCoordinator:
                     bets[idx]['status'] = ack1 if ack1 in ('confirmed', 'rejected') else 'sent'
                     bets[idx + 2]['status'] = ack2 if ack2 in ('confirmed', 'rejected') else 'sent'
 
-                if all_confirmed:
-                    # ✅ ALL 4 CONFIRMED — SAFE!
-                    logger.info(f"✅✅ HEDGE SAFE: All 4 bets confirmed on {[i.get('name') for _,i in tables]}")
+                confirmed_acc1 = [info.get('name', tok[:8]) for tok, info in tables if acc1.pending_bet_acks.get(tok, {}).get('status') == 'confirmed']
+                confirmed_acc2 = [info.get('name', tok[:8]) for tok, info in tables if acc2.pending_bet_acks.get(tok, {}).get('status') == 'confirmed']
+                
+                is_cross_hedged = False
+                if not all_confirmed and len(confirmed_acc1) == 1 and len(confirmed_acc2) == 1:
+                    is_cross_hedged = True
+                    # Preventative clear on the unconfirmed/pending tables to avoid late confirmations
+                    unconfirmed_targets_acc1 = [tok for tok, _ in tables if acc1.pending_bet_acks.get(tok, {}).get('status') != 'confirmed']
+                    unconfirmed_targets_acc2 = [tok for tok, _ in tables if acc2.pending_bet_acks.get(tok, {}).get('status') != 'confirmed']
+                    if unconfirmed_targets_acc1 and acc1.loop:
+                        asyncio.run_coroutine_threadsafe(acc1._undo_bets_async(unconfirmed_targets_acc1), acc1.loop)
+                    if unconfirmed_targets_acc2 and acc2.loop:
+                        asyncio.run_coroutine_threadsafe(acc2._undo_bets_async(unconfirmed_targets_acc2), acc2.loop)
+
+                if all_confirmed or is_cross_hedged:
+                    if all_confirmed:
+                        logger.info(f"✅✅ HEDGE SAFE: All 4 bets confirmed on {[i.get('name') for _,i in tables]}")
+                    else:
+                        logger.info(f"✅✅ CROSS-TABLE HEDGE SAFE: Acc1 on {confirmed_acc1[0]} (Andar) & Acc2 on {confirmed_acc2[0]} (Bahar) confirmed! Keeping the hedge.")
+                    
                     self.bet_state = "placed"
                     tbl_names = [info.get('name', tok[:8]) for tok, info in tables]
                     self.last_bet_result = {
