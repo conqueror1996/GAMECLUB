@@ -1428,52 +1428,21 @@ class GlobalCoordinator:
 
             valid_tables.append((token, info, remaining))
 
-        # ═══ PRE-CHECK: BOTH TWIN TABLES MUST BE CONNECTED ═══
-        # Before firing, verify both ab-3 and ab-4 are alive on both accounts
-        all_tables_connected = True
-        for token, info in list(self.account1.tables.items()):
-            tname = info.get('name', token[:8])
-            ws1 = self.account1.tables.get(token, {}).get('ws')
-            ws2 = self.account2.tables.get(token, {}).get('ws')
-            status1 = self.account1.tables.get(token, {}).get('status', 'Unknown')
-            status2 = self.account2.tables.get(token, {}).get('status', 'Unknown')
-            if ws1 is None or status1 in ['Disconnected', 'Reconnecting...', 'Connecting...']:
-                logger.debug(f"🚫 {tname} Acc1 not connected (status={status1}) — holding fire")
-                all_tables_connected = False
-            if ws2 is None or status2 in ['Disconnected', 'Reconnecting...', 'Connecting...']:
-                logger.debug(f"🚫 {tname} Acc2 not connected (status={status2}) — holding fire")
-                all_tables_connected = False
-        
-        if not all_tables_connected:
-            return  # Silent return — hunter will retry in 100ms
-
-        # ═══ SMART TABLE SELECTION ═══
-        # All 4 tables confirmed connected — now pick freshest 2 to fire on
+        # Pick up to 2 valid tables for firing
         if len(valid_tables) >= 2:
-            valid_tables.sort(key=lambda x: x[2], reverse=True)  # Most remaining time first for SELECTION
-            best_remaining = min(valid_tables[0][2], valid_tables[1][2])
-            logger.info(
-                f"🧠 SMART TIMING: {len(valid_tables)} tables ready (all 4 connected) | "
-                f"Best pair: {valid_tables[0][1].get('name','?')} ({valid_tables[0][2]:.1f}s) + "
-                f"{valid_tables[1][1].get('name','?')} ({valid_tables[1][2]:.1f}s) | "
-                f"Worst remaining: {best_remaining:.1f}s"
-            )
-            # Pick top 2, then re-sort by LEAST remaining first for FIRE ORDER
-            # Table whose window closes soonest gets fired first → less rejection risk
+            valid_tables.sort(key=lambda x: x[2], reverse=True)  # Most remaining time first
             top2 = valid_tables[:2]
             top2.sort(key=lambda x: x[2])  # Ascending — least remaining fires first
-            logger.info(
-                f"🎯 FIRE ORDER: 1st={top2[0][1].get('name','?')} ({top2[0][2]:.1f}s) → "
-                f"2nd={top2[1][1].get('name','?')} ({top2[1][2]:.1f}s)"
-            )
             valid_tables = [(tok, info) for tok, info, _ in top2]
+        elif len(valid_tables) == 1:
+            valid_tables = [(tok, info) for tok, info, _ in valid_tables]
 
         # Log summary of table evaluation
         if skip_reasons:
             reasons_str = " | ".join(f"{k}: {v}" for k, v in skip_reasons.items())
             logger.debug(f"🔍 Table scan: {len(valid_tables)} valid, {len(skip_reasons)} skipped [{reasons_str}]")
         
-        if len(valid_tables) >= 2:
+        if len(valid_tables) >= 1:
             if self.account1.balance < 90 or self.account2.balance < 90:
                 logger.warning("Insufficient balance in one or both accounts (minimum ₹90 required).")
                 self.auto_bet_requested = False
