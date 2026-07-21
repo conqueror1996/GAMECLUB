@@ -787,11 +787,6 @@ class BaccaratManager:
                                 self.tables[game_token]['status'] = "Dealing"
                                 self.tables[game_token]['is_betting_open'] = False
                                 self.tables[game_token]['frame_ready'] = False
-                            elif inner_type in (4, 8):
-                                if game_token in self.pending_bet_acks and self.pending_bet_acks[game_token]['status'] == 'pending':
-                                    self.pending_bet_acks[game_token]['status'] = 'confirmed'
-                                    self.pending_bet_acks[game_token]['raw'] = str(inner_data)[:200]
-                                    logger.info(f"[{self.name}] [{tname}] 🎉 BET CONFIRMED by server (inner_type={inner_type})")
                             elif inner_type == 1:
                                 # inner_type:1 = game state update (may contain bet info)
                                 if game_token in self.pending_bet_acks:
@@ -868,8 +863,30 @@ class BaccaratManager:
                         # 2. successful: true in inner_data  
                         # 3. playerBets/currentBets/acceptedBets arrays
 
+                        elif msg_type == 9:
+                            # Real-time balance update from server (type:9 = newBalance)
+                            # Keeps cached balance accurate so next round's bet sizing
+                            # uses the REAL server balance, not a stale HTTP-polled value
+                            tname9 = self.tables[game_token].get('name', game_token[:8])
+                            bal_data = payload.get('data', {})
+                            if isinstance(bal_data, str):
+                                try:
+                                    bal_data = json.loads(bal_data)
+                                except Exception:
+                                    bal_data = {}
+                            if isinstance(bal_data, dict):
+                                new_bal = bal_data.get('newBalance')
+                                if new_bal is not None:
+                                    try:
+                                        old_bal = self.balance
+                                        self.balance = float(new_bal)
+                                        if abs(self.balance - old_bal) > 0.01:
+                                            logger.info(f"[{self.name}] [{tname9}] 💰 RT balance: {self.balance:.2f} (was {old_bal:.2f})")
+                                    except (ValueError, TypeError):
+                                        pass
+
                         # Log unknown message types for discovery
-                        elif msg_type not in (6,):
+                        elif msg_type not in (6, 9):
                             logger.debug(f"[{self.name}] Unknown msg_type={msg_type}: {str(payload)[:120]}")
 
                     except json.JSONDecodeError:
@@ -1515,8 +1532,11 @@ class GlobalCoordinator:
             logger.debug(f"🔍 Table scan: {len(valid_tables)} valid, {len(skip_reasons)} skipped [{reasons_str}]")
         
         if len(valid_tables) >= 2:
-            if self.account1.balance < 90 or self.account2.balance < 90:
-                logger.warning("Insufficient balance in one or both accounts (minimum ₹90 required).")
+            t1_min = valid_tables[0][1].get('min_bet', 1.0)
+            t2_min = valid_tables[1][1].get('min_bet', 1.0)
+            min_required = max(t1_min, t2_min, 1.0)
+            if self.account1.balance < min_required or self.account2.balance < min_required:
+                logger.warning(f"Insufficient balance (need ₹{min_required:.0f} min). Acc1={self.account1.balance:.2f} Acc2={self.account2.balance:.2f}")
                 self.auto_bet_requested = False
                 self.bet_state = "idle"
                 return
@@ -1530,24 +1550,34 @@ class GlobalCoordinator:
             t2_max = self.account2.tables.get(t2_token, {}).get('max_bet', 900000.0)
             max_allowed_bet = min(t1_max, t2_max)
 
-            # 🔥 RACE CONDITION BYPASS: Send full bet amount to BOTH tables simultaneously
+            # ═══ RACE CONDITION STRATEGY ═══
+            # We intentionally bet the FULL balance on EACH table simultaneously.
+            # The transport.write() burst fires both bets before the server can
+            # deduct the first bet's amount — both pass the balance check.
+            # If race wins: account goes negative, but ALL bets are placed. ✓
+            # If race loses: 1 bet rejected → undo all → re-arm → try next round.
+            # DO NOT divide by num_tables — that defeats the race condition.
+            num_tables = len(target_tables)
             effective_balance = min(self.account1.balance, self.account2.balance)
 
-            # Andar Bahar minimum chip is ₹90 (chips: 90, 180, 450, 900...)
-            CHIP_STEP = 90.0
+            # No chip step restriction — we send via raw WebSocket, not UI
+            # Use the FULL balance as bet amount on each table
+            min_bet = max(t1_info.get('min_bet', 1.0), t2_info.get('min_bet', 1.0), 1.0)
             if self.bet_mode == 'fixed':
-                base_bet = float((int(self.bet_target_amount) // int(CHIP_STEP)) * CHIP_STEP)
-                max_possible_bet = float((int(effective_balance) // int(CHIP_STEP)) * CHIP_STEP)
-                bet_amount = min(base_bet, max_possible_bet, max_allowed_bet)
+                bet_amount = min(float(self.bet_target_amount), effective_balance, max_allowed_bet)
             else:  # auto
-                base_bet = float((int(effective_balance) // int(CHIP_STEP)) * CHIP_STEP)
-                bet_amount = min(base_bet, max_allowed_bet)
+                bet_amount = min(effective_balance, max_allowed_bet)
             
-            if bet_amount < CHIP_STEP:
-                logger.warning(f"Calculated bet amount {bet_amount:.2f} is below minimum chip size {CHIP_STEP}. Skipping round.")
+            # Server expects integer amounts
+            bet_amount = float(int(bet_amount))
+            
+            if bet_amount < min_bet:
+                logger.warning(f"Bet amount ₹{bet_amount:.0f} below table minimum ₹{min_bet:.0f}. Skipping round.")
                 self.auto_bet_requested = False
                 self.bet_state = "idle"
                 return
+            
+            logger.info(f"💰 RACE BET: ₹{bet_amount:.0f}/table × {num_tables} tables = ₹{bet_amount * num_tables:.0f} total (balance: ₹{effective_balance:.0f}) → race condition covers the gap")
             
             bal1_before = self.account1.balance
             bal2_before = self.account2.balance
@@ -1659,60 +1689,102 @@ class GlobalCoordinator:
                     if ws2 and acc2.loop:
                         acc2_ws_jobs.append((ws2, bet_payloads[(tok, 'acc2')], tname))
                 
-                # Step 3: Fire via ws.send() through asyncio — proper framing through proxy
+                # ══════════════════════════════════════════════════
+                # 🚀 RACE CONDITION BURST: transport.write() blast
+                # Write raw WS frames directly to kernel TCP buffers
+                # Both table bets per account fire in single burst <0.1ms
+                # Server receives both BEFORE deducting balance from 1st
+                # Same proven technique used by undo blast (line ~1900)
+                # ══════════════════════════════════════════════════
                 fire_start = time.time()
                 send_failed = False
-                futures = []
-                
-                async def _send_bet(ws_obj, payload_str, account_label, tname_label):
-                    BaccaratManager._log_raw_frame("-->", account_label, tname_label, payload_str)
-                    await ws_obj.send(payload_str)
-                
+
+                # Build raw masked WebSocket TEXT frames from payloads
+                raw_bet_frames = {}
+                for tok_f, info_f in tables:
+                    for acct_key in ['acc1', 'acc2']:
+                        payload_str = bet_payloads[(tok_f, acct_key)]
+                        raw = payload_str.encode('utf-8')
+                        length = len(raw)
+                        frame = bytearray([0x81])  # FIN + TEXT
+                        if length < 126:
+                            frame.append(0x80 | length)
+                        elif length <= 65535:
+                            frame.append(0x80 | 126)
+                            frame.extend(length.to_bytes(2, 'big'))
+                        else:
+                            frame.append(0x80 | 127)
+                            frame.extend(length.to_bytes(8, 'big'))
+                        mask_key = os.urandom(4)
+                        frame.extend(mask_key)
+                        for i in range(length):
+                            frame.append(raw[i] ^ mask_key[i % 4])
+                        raw_bet_frames[(tok_f, acct_key)] = bytes(frame)
+
+                # Per-account burst callbacks: write ALL table bets in
+                # one synchronous burst → both reach server simultaneously
+                acc1_blast_ok = [0]  # mutable counter for closure
+                acc2_blast_ok = [0]
+
+                def _burst_acc1():
+                    for tok_b, info_b in tables:
+                        tname_b = info_b.get('name', tok_b[:8])
+                        ws_b = acc1.tables.get(tok_b, {}).get('ws')
+                        if ws_b:
+                            tr = getattr(ws_b, 'transport', None)
+                            if tr:
+                                tr.write(raw_bet_frames[(tok_b, 'acc1')])
+                                BaccaratManager._log_raw_frame("-->", acc1.name, tname_b, bet_payloads[(tok_b, 'acc1')])
+                                acc1_blast_ok[0] += 1
+
+                def _burst_acc2():
+                    for tok_b, info_b in tables:
+                        tname_b = info_b.get('name', tok_b[:8])
+                        ws_b = acc2.tables.get(tok_b, {}).get('ws')
+                        if ws_b:
+                            tr = getattr(ws_b, 'transport', None)
+                            if tr:
+                                tr.write(raw_bet_frames[(tok_b, 'acc2')])
+                                BaccaratManager._log_raw_frame("-->", acc2.name, tname_b, bet_payloads[(tok_b, 'acc2')])
+                                acc2_blast_ok[0] += 1
+
                 try:
-                    # Fire all Account 1 bets
-                    for ws_obj, payload_str, tname_r in acc1_ws_jobs:
-                        fut = asyncio.run_coroutine_threadsafe(_send_bet(ws_obj, payload_str, acc1.name, tname_r), acc1.loop)
-                        futures.append((fut, f"Acc1-{tname_r}"))
-                    
-                    # Fire all Account 2 bets
-                    for ws_obj, payload_str, tname_r in acc2_ws_jobs:
-                        fut = asyncio.run_coroutine_threadsafe(_send_bet(ws_obj, payload_str, acc2.name, tname_r), acc2.loop)
-                        futures.append((fut, f"Acc2-{tname_r}"))
-                    
-                    # Wait for all sends to complete (max 2s)
-                    for fut, label in futures:
-                        try:
-                            fut.result(timeout=2.0)
-                        except Exception as e:
-                            logger.error(f"⚡ Send failed for {label}: {e}")
-                            send_failed = True
+                    # Fire BOTH accounts simultaneously on their separate event loops
+                    # Each burst writes all table bets without yielding = maximum race window
+                    if acc1.loop and acc1.loop.is_running():
+                        acc1.loop.call_soon_threadsafe(_burst_acc1)
+                    if acc2.loop and acc2.loop.is_running():
+                        acc2.loop.call_soon_threadsafe(_burst_acc2)
+
+                    # Brief wait for burst callbacks to execute on their loops
+                    time.sleep(0.010)
+
+                    blast_count = acc1_blast_ok[0] + acc2_blast_ok[0]
+                    expected_jobs = len(tables) * 2
+                    if blast_count < expected_jobs:
+                        logger.warning(f"⚡ Burst incomplete: {blast_count}/{expected_jobs} frames sent!")
+                        send_failed = True
                 except Exception as e:
-                    logger.error(f"⚡ Firing loop execution failed: {e}")
+                    logger.error(f"⚡ Burst fire failed: {e}")
                     send_failed = True
-                
+
                 fire_elapsed = (time.time() - fire_start) * 1000
-                total_jobs = len(acc1_ws_jobs) + len(acc2_ws_jobs)
-                
-                # Check if we successfully queued all jobs
-                expected_jobs = len(tables) * 2
-                if total_jobs < expected_jobs:
-                    logger.warning(f"⚡ Queue mismatch: only {total_jobs}/{expected_jobs} jobs pre-resolved!")
-                    send_failed = True
-                
+                total_jobs = acc1_blast_ok[0] + acc2_blast_ok[0]
+
                 # Log timing and status
                 for _, _, tname_r in acc1_ws_jobs:
-                    logger.info(f"⚡ Acc1 [{tname_r}] bet sent via ws.send()")
+                    logger.info(f"⚡ Acc1 [{tname_r}] bet BURST via transport.write()")
                 for _, _, tname_r in acc2_ws_jobs:
-                    logger.info(f"⚡ Acc2 [{tname_r}] bet sent via ws.send()")
-                
+                    logger.info(f"⚡ Acc2 [{tname_r}] bet BURST via transport.write()")
+
                 if send_failed:
-                    logger.warning(f"⚡ DIRECT WRITE FAILED ({fire_elapsed:.1f}ms) — undoing ALL")
+                    logger.warning(f"⚡ BURST FIRE FAILED ({fire_elapsed:.1f}ms) — undoing ALL")
                     self._undo_all_tables(acc1, acc2, tokens_used, tables, bet_amt, bal1_bef, bal2_bef)
-                    self._abort_and_rearm(bets, tables, "Direct write failed")
+                    self._abort_and_rearm(bets, tables, "Burst fire failed")
                     return
 
-                logger.info(f"🚀 All 4 bets FIRED in {fire_elapsed:.1f}ms! Waiting for confirmation...")
-                
+                logger.info(f"🚀 All {total_jobs} bets BURST-FIRED in {fire_elapsed:.1f}ms via transport.write()! Waiting for confirmation...")
+
                 # Save fire timing for UI display
                 self.last_bet_result['fire_elapsed_ms'] = round(fire_elapsed, 1)
                 avg_ms = fire_elapsed / max(total_jobs, 1)

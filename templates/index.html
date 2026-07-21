@@ -1494,9 +1494,6 @@
                             Cancel
                         </button>
                     </div>
-                    <button id="undo-btn" class="btn" onclick="manualUndoBet()" title="↩️ Send Undo command to all tables for both accounts" style="padding:8px 16px; font-weight:bold; background: #ea580c; color: white; border: none; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                        ↩️ Undo Bet
-                    </button>
                     <button class="btn btn-outline" onclick="clearCache()" title="Clear all results, history, and cached data" style="padding:8px 12px;">
                         🗑️
                     </button>
@@ -2045,25 +2042,6 @@
         } catch(e) {}
     }
 
-    async function manualUndoBet() {
-        const btn = document.getElementById('undo-btn');
-        if (btn) btn.disabled = true;
-        try {
-            const res  = await fetch('/api/undo', { method: 'POST' });
-            const data = await res.json();
-            if (data.success) {
-                applyBetState('idle', null);
-                toast('↩️ Undo Sent', data.message || 'Undo command sent to all tables.', 'info', 4000);
-            } else {
-                toast('Undo Warning', data.message || 'Failed to send undo', 'warning', 4000);
-            }
-        } catch(e) {
-            toast('Undo Error', e.message, 'error', 4000);
-        } finally {
-            if (btn) btn.disabled = false;
-        }
-    }
-
     async function clearCache() {
         try {
             const res  = await fetch('/api/clear_cache', { method: 'POST' });
@@ -2184,7 +2162,7 @@
             armBtn.classList.add('btn-placing');
             armInner.innerHTML = `<span class="dots"><i></i><i></i><i></i></span>&nbsp; Placing Bets`;
             armBtn.disabled = true;
-            disarmBtn.style.display = 'inline-flex';
+            disarmBtn.style.display = 'none';
 
             const bets  = result?.bets || [];
             const b1    = result?.bet1?.toFixed(2) || '—';
@@ -2221,7 +2199,7 @@
             armBtn.classList.add('btn-placed');
             armInner.innerHTML = 'Bets Placed';
             armBtn.disabled = true;
-            disarmBtn.style.display = 'inline-flex';
+            disarmBtn.style.display = 'none';
 
             const bets   = result?.bets || [];
             const b1     = result?.bet1?.toFixed(2) || '—';
@@ -2612,28 +2590,24 @@
                     
                     if (!hasConnectedTables) {
                         netSignal.className = 'network-signal-container disconnected';
-                        netLatencyVal.innerText = 'offline';
+                        netLatencyVal.innerText = '-- ms';
                         netSignal.title = 'Disconnected';
                     } else {
                         const latVal = Math.round(lat);
+                        netLatencyVal.innerText = `${latVal} ms`;
+                        netSignal.title = `Latency: ${latVal} ms`;
                         
                         if (latVal <= 0) {
+                            netSignal.className = 'network-signal-container disconnected';
+                            netLatencyVal.innerText = 'offline';
+                        } else if (latVal <= 80) {
                             netSignal.className = 'network-signal-container excellent';
-                            netLatencyVal.innerText = 'online';
-                            netSignal.title = 'Connected';
+                        } else if (latVal <= 150) {
+                            netSignal.className = 'network-signal-container good';
+                        } else if (latVal <= 250) {
+                            netSignal.className = 'network-signal-container fair';
                         } else {
-                            netLatencyVal.innerText = `${latVal} ms`;
-                            netSignal.title = `Latency: ${latVal} ms`;
-                            
-                            if (latVal <= 80) {
-                                netSignal.className = 'network-signal-container excellent';
-                            } else if (latVal <= 150) {
-                                netSignal.className = 'network-signal-container good';
-                            } else if (latVal <= 250) {
-                                netSignal.className = 'network-signal-container fair';
-                            } else {
-                                netSignal.className = 'network-signal-container poor';
-                            }
+                            netSignal.className = 'network-signal-container poor';
                         }
                     }
                 }
