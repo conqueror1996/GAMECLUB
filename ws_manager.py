@@ -781,7 +781,7 @@ class BaccaratManager:
                                 self.tables[game_token]['status'] = "Betting Open"
                                 self.tables[game_token]['is_betting_open'] = True
                                 self.tables[game_token]['betting_opened_at'] = time.time()
-                                self._prebuild_bet_frames(game_token)
+                                self._mark_frame_ready(game_token)
                                 self._on_betting_open()
                             elif inner_type == 7:
                                 self.tables[game_token]['status'] = "Dealing"
@@ -1131,54 +1131,13 @@ class BaccaratManager:
                 self.loop.call_soon_threadsafe(task.cancel)
         self.active_tasks.clear()
         # Don't clear tables here; running WS tasks still reference them
-    def _prebuild_bet_frames(self, game_token):
-        """Pre-build raw WebSocket frames for both bet types when betting opens.
-        Warms JIT code path. Actual amount is replaced at fire time in <1ms."""
+    def _mark_frame_ready(self, game_token):
+        """Mark table as frame-ready for UI indicator when betting opens."""
         if game_token not in self.tables:
             return
-        for bet_type in [config.ANDAR_BET_TYPE, config.BAHAR_BET_TYPE]:
-            try:
-                frame = self._build_raw_bet_frame(50.0, bet_type)
-                self.tables[game_token][f'prebuilt_frame_{bet_type}'] = frame
-            except Exception as e:
-                logger.debug(f"[{self.name}] Pre-build frame failed for {game_token[:8]}: {e}")
-        # ✅ Mark this table as frame-ready for UI indicator
         self.tables[game_token]['frame_ready'] = True
         tname = self.tables[game_token].get('name', game_token[:8])
         logger.info(f"[{self.name}] [{tname}] ✅ FRAME READY — betting window open")
-
-    @staticmethod
-    def _build_raw_bet_frame(amount, side=0, round_id=None):
-        """Build a masked WebSocket TEXT frame for a bet. Returns raw bytes."""
-        clean_amt = int(amount) if isinstance(amount, (int, float)) and float(amount).is_integer() else amount
-        andar_val = clean_amt if side == 0 else 0
-        bahar_val = clean_amt if side == 1 else 0
-        inner_data = {
-            "bets": {"andarBet": andar_val, "baharBet": bahar_val, "sideBets": [], "win": 0, "processed": False},
-            "gameplayMessageType": 0
-        }
-        if round_id:
-            inner_data["roundId"] = round_id
-        payload_obj = {
-            "arguments": [{"type": 1, "data": json.dumps(inner_data)}],
-            "target": "Message", "type": 1
-        }
-        raw_payload = (json.dumps(payload_obj) + '\x1e').encode('utf-8')
-        length = len(raw_payload)
-        frame = bytearray([0x81])  # FIN + TEXT
-        if length < 126:
-            frame.append(0x80 | length)
-        elif length <= 65535:
-            frame.append(0x80 | 126)
-            frame.extend(length.to_bytes(2, 'big'))
-        else:
-            frame.append(0x80 | 127)
-            frame.extend(length.to_bytes(8, 'big'))
-        mask_key = os.urandom(4)
-        frame.extend(mask_key)
-        for i in range(length):
-            frame.append(raw_payload[i] ^ mask_key[i % 4])
-        return bytes(frame)
 
     async def _place_multiple_bets_async(self, wss_with_names, amount, side=0):
         """
