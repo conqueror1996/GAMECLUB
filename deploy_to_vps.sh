@@ -5,8 +5,8 @@
 # Run: bash deploy_to_vps.sh
 # ============================================================
 
-VPS_IP="152.228.227.85"
-VPS_PORT="20008"
+VPS_IP="148.113.8.216"
+VPS_PORT="20071"
 VPS_USER="root"
 REPO="https://github.com/conqueror1996/dualheding.git"
 
@@ -25,12 +25,15 @@ apt-get install -y -qq python3 python3-pip python3-venv git curl
 
 echo "==> Cloning/updating repo..."
 if [ -d "/opt/dualhedge" ]; then
-    cd /opt/dualhedge && git pull origin main
+    cd /opt/dualhedge && git fetch --all && git reset --hard origin/main
 else
-    git clone https://github.com/conqueror1996/DUALHEDGE.git /opt/dualhedge
+    git clone https://github.com/conqueror1996/dualheding.git /opt/dualhedge
 fi
 
 cd /opt/dualhedge
+
+echo "==> Cleaning old logs..."
+rm -f local_server.log ws_raw_frames.log *.log 2>/dev/null
 
 echo "==> Setting up Python venv..."
 python3 -m venv venv
