@@ -1180,15 +1180,33 @@ class BaccaratManager:
             frame.append(raw_payload[i] ^ mask_key[i % 4])
         return bytes(frame)
 
-    async def _place_multiple_bets_async(self, wss_with_names, amount, bet_type):
+    async def _place_multiple_bets_async(self, wss_with_names, amount, side=0):
         """
-        Fire bets to all tables simultaneously to trigger race condition.
+        Fire bets to all tables simultaneously using the exact high-speed engine from old codebase.
         wss_with_names: list of (ws, table_name)
+        side: 0 for Andar, 1 for Bahar
         Returns: list of {table, status: 'sent'|'failed', error: str|None}
         """
+        clean_amt = int(amount) if isinstance(amount, (int, float)) and float(amount).is_integer() else amount
+        andar_val = clean_amt if side == 0 else 0
+        bahar_val = clean_amt if side == 1 else 0
+
         payload_0 = {
-            "arguments": [{"type": 1, "data": json.dumps({"areBetsInZeroCommMode": False, "bets": [{"type": bet_type, "bet": amount}], "gameplayMessageType": 0})}],
-            "target": "Message", "type": 1
+            "arguments": [{
+                "type": 1,
+                "data": json.dumps({
+                    "bets": {
+                        "andarBet": andar_val,
+                        "baharBet": bahar_val,
+                        "sideBets": [],
+                        "win": 0,
+                        "processed": False
+                    },
+                    "gameplayMessageType": 0
+                })
+            }],
+            "target": "Message",
+            "type": 1
         }
         msg0 = json.dumps(payload_0) + '\x1e'
 
@@ -1198,17 +1216,12 @@ class BaccaratManager:
             if ws is None or not getattr(ws, 'open', True):
                 results_map[name] = {"table": name, "status": "failed", "error": "No WebSocket connection" if ws is None else "WebSocket not open"}
 
-        # STRICT ALL-OR-NOTHING: If any target table's WebSocket is closed, do not bet on ANY tables for this account.
-        if len(valid_wss) < len(wss_with_names):
-            logger.warning(f"[{self.name}] 🚨 place_multiple_bets aborting: only {len(valid_wss)}/{len(wss_with_names)} WebSockets are open.")
-            for _, name in wss_with_names:
-                results_map[name] = {"table": name, "status": "failed", "error": "WebSocket connection not open for all tables"}
+        if not valid_wss:
             return [results_map[name] for _, name in wss_with_names]
 
-        # Send bets to all tables — track per-table success to prevent double bets
-        raw_sent_tables = set()  # Tables that successfully sent via raw transport
+        # 1. Tier-1: Raw transport write (bypasses event loop queue)
+        sent_via_raw = False
         try:
-            # Build raw websocket TEXT frame (masked) to bypass asyncio overhead
             raw_payload = msg0.encode('utf-8')
             length = len(raw_payload)
             frame = bytearray([0x81])  # FIN + TEXT
@@ -1226,25 +1239,17 @@ class BaccaratManager:
                 frame.append(raw_payload[i] ^ mask_key[i % 4])
             raw_frame = bytes(frame)
 
-            # Try raw transport write — only works if ws.transport exists (websockets < v13)
             for ws, name in valid_wss:
-                try:
-                    if not getattr(ws, 'open', True):
-                        raise ConnectionError("WebSocket closed before raw write")
-                    transport = getattr(ws, 'transport', None)
-                    if transport is None:
-                        raise AttributeError("No transport attribute")
-                    transport.write(raw_frame)
-                    raw_sent_tables.add(name)
-                except Exception as e:
-                    logger.debug(f"[{self.name}] Raw write failed for {name}: {e}")
-                    break  # Stop trying raw for remaining tables
-        except Exception as e:
-            logger.debug(f"[{self.name}] Raw frame build failed, using ws.send: {e}")
+                transport = getattr(ws, 'transport', None)
+                if transport is None:
+                    raise AttributeError("No transport attribute")
+                transport.write(raw_frame)
+                sent_via_raw = True
+        except Exception:
+            sent_via_raw = False
 
-        # Fallback: use ws.send ONLY for tables that were NOT already sent via raw
-        fallback_wss = [(ws, name) for ws, name in valid_wss if name not in raw_sent_tables]
-        if fallback_wss:
+        # 2. Tier-2: asyncio.gather with ws.send() fallback
+        if not sent_via_raw:
             async def _send_one(ws, name):
                 try:
                     await ws.send(msg0)
@@ -1254,7 +1259,7 @@ class BaccaratManager:
                     results_map[name]["status"] = "failed"
                     results_map[name]["error"] = str(e)
 
-            await asyncio.gather(*[_send_one(ws, name) for ws, name in fallback_wss])
+            await asyncio.gather(*[_send_one(ws, name) for ws, name in valid_wss])
 
         return [results_map[name] for _, name in wss_with_names]
 
@@ -1575,278 +1580,189 @@ class GlobalCoordinator:
             # If ANY bet rejected → UNDO ALL bets on ALL tables
             # ═══════════════════════════════════════════════════════════════════
             def _fire_and_verify_all(tables, bets, bet_amt, acc1, acc2, bal1_bef, bal2_bef):
-              try:
-                tokens_used = [tok for tok, info in tables]
-
-                # ── Pre-flight: verify ALL WebSockets are open ──
-                wss1 = []  # Account 1 (Player) WS list
-                wss2 = []  # Account 2 (Banker) WS list
-                for tok, info in tables:
-                    tname = info.get('name', tok[:8])
-                    ws1 = acc1.tables.get(tok, {}).get('ws')
-                    ws2 = acc2.tables.get(tok, {}).get('ws')
-                    if ws1 is None or not getattr(ws1, 'open', True):
-                        logger.warning(f"🚨 Account 1 WS for {tname} NOT open — aborting all")
-                        self._abort_and_rearm(bets, tables, "WS not open")
-                        return
-                    if ws2 is None or not getattr(ws2, 'open', True):
-                        logger.warning(f"🚨 Account 2 WS for {tname} NOT open — aborting all")
-                        self._abort_and_rearm(bets, tables, "WS not open")
-                        return
-                    wss1.append((ws1, tname))
-                    wss2.append((ws2, tname))
-
-                # ── Register pending acks for ALL tables ──
-                for tok, info in tables:
-                    acc1.pending_bet_acks[tok] = {'status': 'pending', 'raw': None}
-                    acc2.pending_bet_acks[tok] = {'status': 'pending', 'raw': None}
-
-                # ══════════════════════════════════════════════════
-                # 🚀 SAFE SEQUENTIAL FIRE: Pre-built frames + transport.write()
-                # No threads — thread-safe, no WS disconnect risk
-                # transport.write() = buffer copy only = <0.1ms per call
-                # ══════════════════════════════════════════════════
-                
-                # Step 1: Pre-build ALL frames (amount is now known)
-                prebuilt = {}  # (tok, account) -> frame bytes
-                for tok, info in tables:
-                    prebuilt[(tok, 'acc1')] = BaccaratManager._build_raw_bet_frame(bet_amt, acc1.bet_type)
-                    prebuilt[(tok, 'acc2')] = BaccaratManager._build_raw_bet_frame(bet_amt, acc2.bet_type)
-                    if tok in acc1.tables:
-                        acc1.tables[tok]['frame_ready'] = True
-                    if tok in acc2.tables:
-                        acc2.tables[tok]['frame_ready'] = True
-                
-                # Step 2: Build text payloads for ws.send() with SignalR invocationId: "0" and active roundId
-                bet_payloads = {}  # (tok, account) -> text string
-                clean_amt = int(bet_amt) if isinstance(bet_amt, (int, float)) and float(bet_amt).is_integer() else bet_amt
-                for tok, info in tables:
-                    rid = info.get('roundId') or acc1.tables.get(tok, {}).get('roundId') or acc2.tables.get(tok, {}).get('roundId')
-                    
-                    data1 = {"bets": {"andarBet": clean_amt, "baharBet": 0, "sideBets": [], "win": 0, "processed": False}, "gameplayMessageType": 0}
-                    data2 = {"bets": {"andarBet": 0, "baharBet": clean_amt, "sideBets": [], "win": 0, "processed": False}, "gameplayMessageType": 0}
-                    if rid:
-                        data1["roundId"] = rid
-                        data2["roundId"] = rid
-                        
-                    payload1 = json.dumps({
-                        "arguments": [{"type": 1, "data": json.dumps(data1)}],
-                        "target": "Message",
-                        "type": 1
-                    }) + '\x1e'
-                    payload2 = json.dumps({
-                        "arguments": [{"type": 1, "data": json.dumps(data2)}],
-                        "target": "Message",
-                        "type": 1
-                    }) + '\x1e'
-                    bet_payloads[(tok, 'acc1')] = payload1
-                    bet_payloads[(tok, 'acc2')] = payload2
-                
-                # Collect ws objects for firing
-                acc1_ws_jobs = []  # (ws, payload, tname)
-                acc2_ws_jobs = []
-                for tok, info in tables:
-                    tname = info.get('name', tok[:8])
-                    ws1 = acc1.tables.get(tok, {}).get('ws')
-                    ws2 = acc2.tables.get(tok, {}).get('ws')
-                    if ws1 and acc1.loop:
-                        acc1_ws_jobs.append((ws1, bet_payloads[(tok, 'acc1')], tname))
-                    if ws2 and acc2.loop:
-                        acc2_ws_jobs.append((ws2, bet_payloads[(tok, 'acc2')], tname))
-                
-                # Step 3: Fire via ws.send() through asyncio — proper framing through proxy
-                fire_start = time.time()
-                send_failed = False
-                futures = []
-                
-                async def _send_bet(ws_obj, payload_str, account_label, tname_label):
-                    BaccaratManager._log_raw_frame("-->", account_label, tname_label, payload_str)
-                    await ws_obj.send(payload_str)
-                
                 try:
-                    # Fire all Account 1 bets
-                    for ws_obj, payload_str, tname_r in acc1_ws_jobs:
-                        fut = asyncio.run_coroutine_threadsafe(_send_bet(ws_obj, payload_str, acc1.name, tname_r), acc1.loop)
-                        futures.append((fut, f"Acc1-{tname_r}"))
-                    
-                    # Fire all Account 2 bets
-                    for ws_obj, payload_str, tname_r in acc2_ws_jobs:
-                        fut = asyncio.run_coroutine_threadsafe(_send_bet(ws_obj, payload_str, acc2.name, tname_r), acc2.loop)
-                        futures.append((fut, f"Acc2-{tname_r}"))
-                    
-                    # Wait for all sends to complete (max 2s)
-                    for fut, label in futures:
-                        try:
-                            fut.result(timeout=2.0)
-                        except Exception as e:
-                            logger.error(f"⚡ Send failed for {label}: {e}")
-                            send_failed = True
-                except Exception as e:
-                    logger.error(f"⚡ Firing loop execution failed: {e}")
-                    send_failed = True
-                
-                fire_elapsed = (time.time() - fire_start) * 1000
-                total_jobs = len(acc1_ws_jobs) + len(acc2_ws_jobs)
-                
-                # Check if we successfully queued all jobs
-                expected_jobs = len(tables) * 2
-                if total_jobs < expected_jobs:
-                    logger.warning(f"⚡ Queue mismatch: only {total_jobs}/{expected_jobs} jobs pre-resolved!")
-                    send_failed = True
-                
-                # Log timing and status
-                for _, _, tname_r in acc1_ws_jobs:
-                    logger.info(f"⚡ Acc1 [{tname_r}] bet sent via ws.send()")
-                for _, _, tname_r in acc2_ws_jobs:
-                    logger.info(f"⚡ Acc2 [{tname_r}] bet sent via ws.send()")
-                
-                if send_failed:
-                    logger.warning(f"⚡ DIRECT WRITE FAILED ({fire_elapsed:.1f}ms) — undoing ALL")
-                    self._undo_all_tables(acc1, acc2, tokens_used, tables, bet_amt, bal1_bef, bal2_bef)
-                    self._abort_and_rearm(bets, tables, "Direct write failed")
-                    return
+                    tokens_used = [tok for tok, info in tables]
 
-                logger.info(f"🚀 All 4 bets FIRED in {fire_elapsed:.1f}ms! Waiting for confirmation...")
-                
-                # Save fire timing for UI display
-                self.last_bet_result['fire_elapsed_ms'] = round(fire_elapsed, 1)
-                avg_ms = fire_elapsed / max(total_jobs, 1)
-                self.last_bet_result['fire_details'] = []
-                for _, _, tname_r in acc1_ws_jobs:
-                    self.last_bet_result['fire_details'].append({'table': tname_r, 'account': 'Acc1', 'ok': True, 'ms': round(avg_ms, 2)})
-                for _, _, tname_r in acc2_ws_jobs:
-                    self.last_bet_result['fire_details'].append({'table': tname_r, 'account': 'Acc2', 'ok': True, 'ms': round(avg_ms, 2)})
+                    # (ws, table_name) pairs for each account
+                    wss1_named = [(info.get('ws'), info.get('name', name)) for (_, info), name in zip(tables, table_names)]
+                    wss2_named = [(acc2.tables[token].get('ws'), acc2.tables[token].get('name', name))
+                                  for (token, _), name in zip(tables, table_names)]
 
-                # ══════════════════════════════════════════════════
-                # ⏱️ POLL FOR ALL 4 CONFIRMATIONS
-                # ══════════════════════════════════════════════════
-                # Andar Bahar confirmations can take 1-3s through proxy.
-                # Old 900ms window caused false HEDGE BROKEN events.
-                max_polls = 20  # 20 × 150ms = 3s max
-                fire_time = time.time()
-                all_confirmed = False
-
-                for poll in range(max_polls):
-                    time.sleep(0.15)
-
-                    if time.time() - fire_time > 4.0:
-                        logger.warning(f"⏰ HARD DEADLINE reached ({time.time()-fire_time:.1f}s)")
-                        break
-
-                    # Check each table's ack status
-                    statuses = {}
-                    any_rejected = False
-                    all_done = True
-
-                    for tok, info in tables:
-                        tname = info.get('name', tok[:8])
-                        ack1 = acc1.pending_bet_acks.get(tok, {}).get('status', 'pending')
-                        ack2 = acc2.pending_bet_acks.get(tok, {}).get('status', 'pending')
-                        statuses[tname] = (ack1, ack2)
-
-                        if ack1 == 'rejected' or ack2 == 'rejected':
-                            any_rejected = True
-                        if ack1 == 'pending' or ack2 == 'pending':
-                            all_done = False
-
-                    if any_rejected:
-                        logger.warning(f"❌ REJECTION detected: {statuses}")
-                        break
-
-                    if all_done:
-                        # Check if ALL confirmed (not just all done)
-                        all_confirmed = all(
-                            acc1.pending_bet_acks.get(tok, {}).get('status') == 'confirmed' and
-                            acc2.pending_bet_acks.get(tok, {}).get('status') == 'confirmed'
-                            for tok, info in tables
-                        )
-                        if all_confirmed:
-                            logger.info(f"✅ ALL 4 BETS CONFIRMED in {(poll+1)*150}ms! 🎉")
-                        break
-
-                # ══════════════════════════════════════════════════
-                # 📊 FINAL VERDICT: ALL OR NOTHING
-                # ══════════════════════════════════════════════════
-
-                # Update individual bet statuses from acks
-                for idx, (tok, info) in enumerate(tables):
-                    ack1 = acc1.pending_bet_acks.get(tok, {}).get('status', 'pending')
-                    ack2 = acc2.pending_bet_acks.get(tok, {}).get('status', 'pending')
-                    bets[idx]['status'] = ack1 if ack1 in ('confirmed', 'rejected') else 'sent'
-                    bets[idx + 2]['status'] = ack2 if ack2 in ('confirmed', 'rejected') else 'sent'
-
-                if all_confirmed:
-                    # ✅ ALL 4 CONFIRMED — SAFE!
-                    logger.info(f"✅✅ HEDGE SAFE: All 4 bets confirmed on {[i.get('name') for _,i in tables]}")
-                    self.bet_state = "placed"
-                    tbl_names = [info.get('name', tok[:8]) for tok, info in tables]
-                    self.last_bet_result = {
-                        "type": "placed", "tables": tbl_names,
-                        "bet1": bet_amt, "bet2": bet_amt,
-                        "bets": bets, "hedge_status": "safe"
-                    }
-                    record = {
-                        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                        "epoch": time.time(),
-                        "tables": tbl_names,
-                        "bet1_amount": bet_amt, "bet2_amount": bet_amt,
-                        "bet1_type": "Player", "bet2_type": "Banker",
-                        "bet_statuses": [b['status'] for b in bets],
-                        "hedge_status": "safe",
-                        "bal1_before": bal1_bef, "bal2_before": bal2_bef,
-                        "profit1": None, "profit2": None, "total_profit": None,
-                        "bal1_after": None, "bal2_after": None,
-                        "status": "placed"
-                    }
-                    self.bet_history.append(record)
-                    self._save_history_to_file()
+                    # Fire BOTH accounts simultaneously on separate event loops
+                    f1 = None
+                    f2 = None
+                    fire_start = time.time()
                     if acc1.loop:
-                        asyncio.run_coroutine_threadsafe(
-                            self._track_bet_result(tbl_names, bal1_bef, bal2_bef),
+                        f1 = asyncio.run_coroutine_threadsafe(
+                            acc1._place_multiple_bets_async(wss1_named, bet_amt, side=0),
                             acc1.loop
                         )
-                else:
-                    # ❌ NOT ALL CONFIRMED → UNDO EVERYTHING
-                    status_summary = []
-                    for tok, info in tables:
-                        tname = info.get('name', tok[:8])
-                        a1 = acc1.pending_bet_acks.get(tok, {}).get('status', '?')
-                        a2 = acc2.pending_bet_acks.get(tok, {}).get('status', '?')
-                        status_summary.append(f"{tname}:P={a1}/B={a2}")
+                    if acc2.loop:
+                        f2 = asyncio.run_coroutine_threadsafe(
+                            acc2._place_multiple_bets_async(wss2_named, bet_amt, side=1),
+                            acc2.loop
+                        )
 
-                    logger.error(f"🚨 HEDGE BROKEN — UNDOING ALL BETS: {status_summary}")
-                    self._hedge_undone = True
+                    # Collect WS-send results
+                    res1, res2 = [], []
+                    send_failed = False
+                    try:
+                        if f1:
+                            res1 = f1.result(timeout=2.0)
+                        if f2:
+                            res2 = f2.result(timeout=2.0)
+                    except Exception as e:
+                        logger.error(f"⚡ Firing execution error: {e}")
+                        send_failed = True
 
-                    self._undo_all_tables(acc1, acc2, tokens_used, tables, bet_amt, bal1_bef, bal2_bef)
+                    fire_elapsed = (time.time() - fire_start) * 1000
 
-                    for tok, _ in tables:
-                        acc1.pending_bet_acks.pop(tok, None)
-                        acc2.pending_bet_acks.pop(tok, None)
+                    if send_failed:
+                        logger.warning(f"⚡ DIRECT WRITE FAILED ({fire_elapsed:.1f}ms) — undoing ALL")
+                        self._undo_all_tables(acc1, acc2, tokens_used, tables, bet_amt, bal1_bef, bal2_bef)
+                        self._abort_and_rearm(bets, tables, "Direct write failed")
+                        return
 
-                    for b in bets:
-                        if b['status'] != 'confirmed':
-                            b['status'] = 'undone'
-                            b['error'] = b.get('error') or 'Hedge broken — ALL bets undone'
+                    logger.info(f"🚀 All 4 bets FIRED in {fire_elapsed:.1f}ms! Waiting for confirmation...")
+                    
+                    # Save fire timing for UI display
+                    self.last_bet_result['fire_elapsed_ms'] = round(fire_elapsed, 1)
+                    total_jobs = len(wss1_named) + len(wss2_named)
+                    avg_ms = fire_elapsed / max(total_jobs, 1)
+                    self.last_bet_result['fire_details'] = []
+                    for _, tname_r in wss1_named:
+                        self.last_bet_result['fire_details'].append({'table': tname_r, 'account': 'Acc1', 'ok': True, 'ms': round(avg_ms, 2)})
+                    for _, tname_r in wss2_named:
+                        self.last_bet_result['fire_details'].append({'table': tname_r, 'account': 'Acc2', 'ok': True, 'ms': round(avg_ms, 2)})
 
-                    self.last_bet_result = {
-                        "type": "undone",
-                        "tables": [info.get('name', tok[:8]) for tok, info in tables],
-                        "bet1": bet_amt, "bet2": bet_amt,
-                        "bets": bets, "hedge_status": "broken",
-                        "reason": f"Not all 4 confirmed: {status_summary}"
-                    }
-                    logger.info("🔄 Auto re-arming for next round...")
-                    self.auto_bet_requested = True
-                    self.bet_state = "armed"
+                    # ══════════════════════════════════════════════════
+                    # ⏱️ POLL FOR ALL 4 CONFIRMATIONS
+                    # ══════════════════════════════════════════════════
+                    max_polls = 20  # 20 × 150ms = 3s max
+                    fire_time = time.time()
+                    all_confirmed = False
 
-              except Exception as e:
-                logger.error(f"🚨 CRITICAL: _fire_and_verify_all CRASHED: {e}")
-                import traceback
-                logger.error(traceback.format_exc())
-                self.bet_state = "idle"
-                self.auto_bet_requested = False
-                if self.telegram:
-                    self.telegram.send_message(f"🚨 SYSTEM CRASH: {e}")
+                    for poll in range(max_polls):
+                        time.sleep(0.15)
+
+                        if time.time() - fire_time > 4.0:
+                            logger.warning(f"⏰ HARD DEADLINE reached ({time.time()-fire_time:.1f}s)")
+                            break
+
+                        # Check each table's ack status
+                        statuses = {}
+                        any_rejected = False
+                        all_done = True
+
+                        for tok, info in tables:
+                            tname = info.get('name', tok[:8])
+                            ack1 = acc1.pending_bet_acks.get(tok, {}).get('status', 'pending')
+                            ack2 = acc2.pending_bet_acks.get(tok, {}).get('status', 'pending')
+                            statuses[tname] = (ack1, ack2)
+
+                            if ack1 == 'rejected' or ack2 == 'rejected':
+                                any_rejected = True
+                            if ack1 == 'pending' or ack2 == 'pending':
+                                all_done = False
+
+                        if any_rejected:
+                            logger.warning(f"❌ REJECTION detected: {statuses}")
+                            break
+
+                        if all_done:
+                            # Check if ALL confirmed (not just all done)
+                            all_confirmed = all(
+                                acc1.pending_bet_acks.get(tok, {}).get('status') == 'confirmed' and
+                                acc2.pending_bet_acks.get(tok, {}).get('status') == 'confirmed'
+                                for tok, info in tables
+                            )
+                            if all_confirmed:
+                                logger.info(f"✅ ALL 4 BETS CONFIRMED in {(poll+1)*150}ms! 🎉")
+                            break
+
+                    # ══════════════════════════════════════════════════
+                    # 📊 FINAL VERDICT: ALL OR NOTHING
+                    # ══════════════════════════════════════════════════
+
+                    # Update individual bet statuses from acks
+                    for idx, (tok, info) in enumerate(tables):
+                        ack1 = acc1.pending_bet_acks.get(tok, {}).get('status', 'pending')
+                        ack2 = acc2.pending_bet_acks.get(tok, {}).get('status', 'pending')
+                        bets[idx]['status'] = ack1 if ack1 in ('confirmed', 'rejected') else 'sent'
+                        bets[idx + 2]['status'] = ack2 if ack2 in ('confirmed', 'rejected') else 'sent'
+
+                    if all_confirmed:
+                        # ✅ ALL 4 CONFIRMED — SAFE!
+                        logger.info(f"✅✅ HEDGE SAFE: All 4 bets confirmed on {[i.get('name') for _,i in tables]}")
+                        self.bet_state = "placed"
+                        tbl_names = [info.get('name', tok[:8]) for tok, info in tables]
+                        self.last_bet_result = {
+                            "type": "placed", "tables": tbl_names,
+                            "bet1": bet_amt, "bet2": bet_amt,
+                            "bets": bets, "hedge_status": "safe"
+                        }
+                        record = {
+                            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                            "epoch": time.time(),
+                            "tables": tbl_names,
+                            "bet1_amount": bet_amt, "bet2_amount": bet_amt,
+                            "bet1_type": "Player", "bet2_type": "Banker",
+                            "bet_statuses": [b['status'] for b in bets],
+                            "hedge_status": "safe",
+                            "bal1_before": bal1_bef, "bal2_before": bal2_bef,
+                            "profit1": None, "profit2": None, "total_profit": None,
+                            "bal1_after": None, "bal2_after": None,
+                            "status": "placed"
+                        }
+                        self.bet_history.append(record)
+                        self._save_history_to_file()
+                        if acc1.loop:
+                            asyncio.run_coroutine_threadsafe(
+                                self._track_bet_result(tbl_names, bal1_bef, bal2_bef),
+                                acc1.loop
+                            )
+                    else:
+                        # ❌ NOT ALL CONFIRMED → UNDO EVERYTHING
+                        status_summary = []
+                        for tok, info in tables:
+                            tname = info.get('name', tok[:8])
+                            a1 = acc1.pending_bet_acks.get(tok, {}).get('status', '?')
+                            a2 = acc2.pending_bet_acks.get(tok, {}).get('status', '?')
+                            status_summary.append(f"{tname}:P={a1}/B={a2}")
+
+                        logger.error(f"🚨 HEDGE BROKEN — UNDOING ALL BETS: {status_summary}")
+                        self._hedge_undone = True
+
+                        self._undo_all_tables(acc1, acc2, tokens_used, tables, bet_amt, bal1_bef, bal2_bef)
+
+                        for tok, _ in tables:
+                            acc1.pending_bet_acks.pop(tok, None)
+                            acc2.pending_bet_acks.pop(tok, None)
+
+                        for b in bets:
+                            if b['status'] != 'confirmed':
+                                b['status'] = 'undone'
+                                b['error'] = b.get('error') or 'Hedge broken — ALL bets undone'
+
+                        self.last_bet_result = {
+                            "type": "undone",
+                            "tables": [info.get('name', tok[:8]) for tok, info in tables],
+                            "bet1": bet_amt, "bet2": bet_amt,
+                            "bets": bets, "hedge_status": "broken",
+                            "reason": f"Not all 4 confirmed: {status_summary}"
+                        }
+                        logger.info("🔄 Auto re-arming for next round...")
+                        self.auto_bet_requested = True
+                        self.bet_state = "armed"
+
+                except Exception as e:
+                    logger.error(f"🚨 CRITICAL: _fire_and_verify_all CRASHED: {e}")
+                    import traceback
+                    logger.error(traceback.format_exc())
+                    self.bet_state = "idle"
+                    self.auto_bet_requested = False
+                    if self.telegram:
+                        self.telegram.send_message(f"🚨 SYSTEM CRASH: {e}")
 
             threading.Thread(
                 target=_fire_and_verify_all,
