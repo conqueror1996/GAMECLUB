@@ -2045,6 +2045,47 @@
         } catch(e) {}
     }
 
+    async function fireAll4Now() {
+        const btn = document.getElementById('fire-all-4-btn');
+        if (btn) btn.disabled = true;
+        
+        const select = document.getElementById('bet-mode-select');
+        let mode = 'auto';
+        let amount = 100.0;
+        
+        if (select) {
+            if (select.value === 'auto') {
+                mode = 'auto';
+            } else if (select.value === 'custom') {
+                mode = 'fixed';
+                const val = parseFloat(document.getElementById('custom-amount-input').value);
+                if (!isNaN(val) && val > 0) amount = val;
+            } else {
+                mode = 'fixed';
+                amount = parseFloat(select.value);
+            }
+        }
+
+        try {
+            toast('Firing All 4', 'Pouncing on all 4 bets across both tables...', 'info', 3000);
+            const res = await fetch('/api/fire_all_4', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode, amount })
+            });
+            const data = await res.json();
+            if (data.success) {
+                toast('⚡ Burst Fired!', data.message, 'success', 5000);
+            } else {
+                toast('Fire Failed', data.message, 'warn', 5000);
+            }
+        } catch(e) {
+            toast('Error', 'Failed to execute 4-table burst fire: ' + e, 'danger', 5000);
+        } finally {
+            setTimeout(() => { if (btn) btn.disabled = false; }, 2000);
+        }
+    }
+
     async function clearCache() {
         try {
             const res  = await fetch('/api/clear_cache', { method: 'POST' });
