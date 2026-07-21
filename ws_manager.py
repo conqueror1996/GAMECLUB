@@ -2236,12 +2236,16 @@ class GlobalCoordinator:
 
         self.bet_mode = mode
         self.bet_target_amount = float(amount)
-        self.auto_bet_requested = True
-        self.bet_state = "armed"
+        # Keep auto_bet_requested FALSE so Arm Auto-Bet does NOT turn on
+        self.auto_bet_requested = False
         
-        # Trigger immediate check to pounce on all 4 bets
+        # Trigger immediate check to pounce on all 4 bets via transport.write() burst
         with self._bet_lock:
+            # Temporarily flag requested so _check_auto_bet_locked proceeds
+            self.auto_bet_requested = True
             self._check_auto_bet_locked()
+            # Reset back to False so continuous hunting is not active
+            self.auto_bet_requested = False
 
         return {"success": True, "message": "⚡ Burst-fired ALL 4 bets on 2 tables!"}
 
