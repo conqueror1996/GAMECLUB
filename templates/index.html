@@ -2804,44 +2804,8 @@
                 setTimeout(() => applyBetState('idle', null), 2000);
             }
 
-            // ─── AUTO-RECONNECT: Detect server restart and silently re-login ───
-            const dashboardVisible = document.getElementById('dashboard').style.display !== 'none';
-            const isNotLoggedIn = data.login_status1 && data.login_status1.toLowerCase().includes('not logged in');
-            if (dashboardVisible && isNotLoggedIn && !autoReconnecting) {
-                const history = getHistory();
-                if (history.length > 0) {
-                    autoReconnecting = true;
-                    clearTimeout(autoReconnectTimer);
-                    autoReconnectTimer = setTimeout(async () => {
-                        const creds = history[0];
-                        toast('🔄 Auto-Reconnecting', 'Server restarted — logging in with saved credentials...', 'info', 6000);
-                        try {
-                            const res = await fetch('/api/login', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    baseUrl: creds.baseUrl,
-                                    username1: creds.username1, password1: creds.password1,
-                                    username2: creds.username2, password2: creds.password2
-                                })
-                            });
-                            const d = await res.json();
-                            if (d.success) {
-                                toast('✅ Reconnected', 'Both accounts logged back in — tables connecting...', 'success', 4000);
-                            } else {
-                                toast('❌ Auto-Reconnect Failed', d.message || 'Please login manually.', 'warn', 6000);
-                            }
-                        } catch(e) {
-                            toast('❌ Auto-Reconnect Error', 'Network error during reconnect.', 'warn', 5000);
-                        } finally {
-                            autoReconnecting = false;
-                        }
-                    }, 2000); // 2s debounce — don't spam reconnect on flaky status
-                }
-            }
-            // If logged in again, reset the reconnect guard
-            if (!isNotLoggedIn) autoReconnecting = false;
-            // ──────────────────────────────────────────────────────────────────
+
+
 
             // Burned Account handling
             if (data.burned_account) {
