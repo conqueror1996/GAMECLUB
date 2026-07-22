@@ -1178,7 +1178,7 @@ class BaccaratManager:
         if not valid_wss:
             return [results_map[name] for _, name in wss_with_names]
 
-        # 1. Tier-1: Raw transport write (bypasses event loop queue)
+        # 1. Tier-1: Try raw transport write first (fastest), fall back to ws.send()
         sent_via_raw = False
         try:
             raw_payload = msg0.encode('utf-8')
@@ -1198,17 +1198,25 @@ class BaccaratManager:
                 frame.append(raw_payload[i] ^ mask_key[i % 4])
             raw_frame = bytes(frame)
 
+            # Try raw transport write — only works if ws.transport exists
             for ws, name in valid_wss:
-                transport = getattr(ws, 'transport', None)
-                if transport is None:
-                    raise AttributeError("No transport attribute")
-                transport.write(raw_frame)
-                sent_via_raw = True
-        except Exception:
+                try:
+                    transport = getattr(ws, 'transport', None)
+                    if transport is None:
+                        raise AttributeError("No transport attribute")
+                    transport.write(raw_frame)
+                    sent_via_raw = True
+                except Exception as e:
+                    results_map[name]["status"] = "failed"
+                    results_map[name]["error"] = str(e)
+                    sent_via_raw = False
+                    break  # Fall back to ws.send for all
+        except Exception as e:
+            logger.debug(f"[{self.name}] Raw frame build failed, using ws.send: {e}")
             sent_via_raw = False
 
-        # 2. Tier-2: asyncio.gather with ws.send() fallback
         if not sent_via_raw:
+            # Fallback: Use asyncio.gather with ws.send for all tables simultaneously
             async def _send_one(ws, name):
                 try:
                     await ws.send(msg0)
@@ -1217,6 +1225,10 @@ class BaccaratManager:
                 except Exception as e:
                     results_map[name]["status"] = "failed"
                     results_map[name]["error"] = str(e)
+
+            # Reset any partial failures from raw attempt
+            for ws, name in valid_wss:
+                results_map[name] = {"table": name, "status": "sent", "error": None}
 
             await asyncio.gather(*[_send_one(ws, name) for ws, name in valid_wss])
 
@@ -1510,6 +1522,11 @@ class GlobalCoordinator:
             def _fire_and_verify_all(tables, bets, bet_amt, acc1, acc2, bal1_bef, bal2_bef):
                 try:
                     tokens_used = [tok for tok, info in tables]
+
+                    # 🔒 Register pending bet acks BEFORE firing (critical for confirmation tracking)
+                    for tok in tokens_used:
+                        acc1.pending_bet_acks[tok] = {'status': 'pending', 'raw': None}
+                        acc2.pending_bet_acks[tok] = {'status': 'pending', 'raw': None}
 
                     # (ws, table_name) pairs for each account
                     wss1_named = [(info.get('ws'), info.get('name', name)) for (_, info), name in zip(tables, table_names)]
