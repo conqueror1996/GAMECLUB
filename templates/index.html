@@ -2049,17 +2049,36 @@
 
     async function clearCache() {
         try {
+            // Preserve recent connections list from localStorage
+            const savedRecentConnections = localStorage.getItem('loginHistory');
+
+            // Send server-side clear request
             const res  = await fetch('/api/clear_cache', { method: 'POST' });
             const data = await res.json();
-            if (data.success) {
-                // Reset local UI state
-                lastResultStr = null;
-                document.getElementById('result-grid').innerHTML = '';
-                document.getElementById('result-footer').innerHTML = '';
-                applyBetState('idle', null);
-                toast('Cache Cleared', 'All results, history, and bet data have been reset.', 'info', 3000);
+
+            // Clear browser session storage and active session tokens
+            sessionStorage.clear();
+            localStorage.removeItem('sessionId');
+
+            // Restore recent connections list so it is NOT wiped
+            if (savedRecentConnections) {
+                localStorage.setItem('loginHistory', savedRecentConnections);
             }
-        } catch(e) {}
+            renderHistory();
+
+            if (data.success) {
+                // Reset local UI result grid & bet history display
+                lastResultStr = null;
+                const grid = document.getElementById('result-grid');
+                if (grid) grid.innerHTML = '';
+                const footer = document.getElementById('result-footer');
+                if (footer) footer.innerHTML = '';
+                applyBetState('idle', null);
+                toast('Cache & Session Cleared', 'All browser sessions and bet data reset. Recent Connections preserved.', 'info', 3000);
+            }
+        } catch(e) {
+            console.error(e);
+        }
     }
 
     async function clearCacheFromLogin() {
@@ -2069,8 +2088,23 @@
         btn.disabled = true;
         btn.innerHTML = '🧹 Clearing...';
         try {
+            // Preserve recent connections list from localStorage
+            const savedRecentConnections = localStorage.getItem('loginHistory');
+
+            // Send server-side clear request
             const res = await fetch('/api/clear_cache', { method: 'POST' });
             const data = await res.json();
+
+            // Clear browser session storage and active session tokens
+            sessionStorage.clear();
+            localStorage.removeItem('sessionId');
+
+            // Restore recent connections list so it is NOT wiped
+            if (savedRecentConnections) {
+                localStorage.setItem('loginHistory', savedRecentConnections);
+            }
+            renderHistory();
+
             if (data.success) {
                 const errBox = document.getElementById('login-error');
                 const errText = document.getElementById('login-error-text');
@@ -2080,7 +2114,7 @@
                     errBox.style.background = 'rgba(0,229,255,0.1)';
                     errBox.style.borderColor = 'rgba(0,229,255,0.3)';
                     errBox.style.color = 'var(--cyan)';
-                    errText.innerHTML = '🧹 <b>System & Cache Cleared!</b> All stale ACKs, frame flags and memory reset cleanly.';
+                    errText.innerHTML = '🧹 <b>Browser Session & Cache Cleared!</b> All stale ACKs, frame flags and session data reset. Recent Connections preserved.';
                     setTimeout(() => { errBox.style.display = 'none'; }, 4000);
                 }
             }
