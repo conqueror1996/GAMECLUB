@@ -2052,13 +2052,16 @@
             // Preserve recent connections list from localStorage
             const savedRecentConnections = localStorage.getItem('loginHistory');
 
-            // Send server-side clear request
+            // Send server-side clear request for current session
             const res  = await fetch('/api/clear_cache', { method: 'POST' });
             const data = await res.json();
 
-            // Clear browser session storage and active session tokens
+            // Clear browser session storage
             sessionStorage.clear();
-            localStorage.removeItem('sessionId');
+
+            // 🚀 Generate a BRAND-NEW unique Session ID (like opening a fresh tab!)
+            sessionId = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            localStorage.setItem('sessionId', sessionId);
 
             // Restore recent connections list so it is NOT wiped
             if (savedRecentConnections) {
@@ -2074,7 +2077,7 @@
                 const footer = document.getElementById('result-footer');
                 if (footer) footer.innerHTML = '';
                 applyBetState('idle', null);
-                toast('Cache & Session Cleared', 'All browser sessions and bet data reset. Recent Connections preserved.', 'info', 3000);
+                toast('Fresh Session & Cache Cleared', 'Brand-new Session ID generated! Engine reset to 100% clean state.', 'info', 3500);
             }
         } catch(e) {
             console.error(e);
@@ -2095,9 +2098,12 @@
             const res = await fetch('/api/clear_cache', { method: 'POST' });
             const data = await res.json();
 
-            // Clear browser session storage and active session tokens
+            // Clear browser session storage
             sessionStorage.clear();
-            localStorage.removeItem('sessionId');
+
+            // 🚀 Generate a BRAND-NEW unique Session ID (like opening a fresh tab!)
+            sessionId = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            localStorage.setItem('sessionId', sessionId);
 
             // Restore recent connections list so it is NOT wiped
             if (savedRecentConnections) {
@@ -2114,8 +2120,8 @@
                     errBox.style.background = 'rgba(0,229,255,0.1)';
                     errBox.style.borderColor = 'rgba(0,229,255,0.3)';
                     errBox.style.color = 'var(--cyan)';
-                    errText.innerHTML = '🧹 <b>Browser Session & Cache Cleared!</b> All stale ACKs, frame flags and session data reset. Recent Connections preserved.';
-                    setTimeout(() => { errBox.style.display = 'none'; }, 4000);
+                    errText.innerHTML = '✨ <b>Fresh Brand-New Session Created!</b> All ACKs, frames, memory reset cleanly (0 pending ACKs, fresh engine). Recent Connections preserved.';
+                    setTimeout(() => { errBox.style.display = 'none'; }, 4500);
                 }
             }
         } catch(e) {
