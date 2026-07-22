@@ -1661,6 +1661,10 @@ class GlobalCoordinator:
                         }
                         self.bet_history.append(record)
                         self._save_history_to_file()
+
+                        # 🧹 Clean up all garbage/cache after successful bet
+                        self._cleanup_after_bet(acc1, acc2, tokens_used)
+
                         if acc1.loop:
                             asyncio.run_coroutine_threadsafe(
                                 self._track_bet_result(tbl_names, bal1_bef, bal2_bef),
@@ -1700,6 +1704,9 @@ class GlobalCoordinator:
                         self.auto_bet_requested = True
                         self.bet_state = "armed"
 
+                        # 🧹 Clean up all garbage/cache after undone bet
+                        self._cleanup_after_bet(acc1, acc2, tokens_used)
+
                 except Exception as e:
                     logger.error(f"🚨 CRITICAL: _fire_and_verify_all CRASHED: {e}")
                     import traceback
@@ -1714,6 +1721,35 @@ class GlobalCoordinator:
                 args=(target_tables, individual_bets, bet_amount, self.account1, self.account2, bal1_before, bal2_before),
                 daemon=True
             ).start()
+
+    def _cleanup_after_bet(self, acc1, acc2, tokens_used):
+        """Clear all garbage and stale cache after a bet cycle completes (success or undone)."""
+        # 1. Clear pending bet acks for used tokens
+        for tok in tokens_used:
+            acc1.pending_bet_acks.pop(tok, None)
+            acc2.pending_bet_acks.pop(tok, None)
+
+        # 2. Reset frame_ready flags on used tables
+        for tok in tokens_used:
+            if tok in acc1.tables:
+                acc1.tables[tok]['frame_ready'] = False
+            if tok in acc2.tables:
+                acc2.tables[tok]['frame_ready'] = False
+
+        # 3. Clear any stale prebuilt frames
+        for tok in tokens_used:
+            for key_prefix in ['prebuilt_frame_']:
+                for tbl_dict in [acc1.tables.get(tok, {}), acc2.tables.get(tok, {})]:
+                    stale_keys = [k for k in tbl_dict if k.startswith(key_prefix)]
+                    for k in stale_keys:
+                        del tbl_dict[k]
+
+        # 4. Force garbage collection
+        import gc
+        gc.collect()
+
+        logger.info(f"🧹 Post-bet cleanup done: cleared acks, frame cache, GC for {len(tokens_used)} tables")
+
     def _abort_and_rearm(self, bets, tables, reason):
         """Quick abort without undo — used for pre-flight failures."""
         for b in bets:
