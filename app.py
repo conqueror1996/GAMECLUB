@@ -634,19 +634,6 @@ def disarm_bet():
     result = coordinator.disarm_auto_bet()
     return jsonify(result)
 
-@app.route('/api/fire_all_4', methods=['POST'])
-def fire_all_4():
-    coordinator = get_coordinator()
-    if not coordinator:
-        return jsonify({"error": "Missing X-Session-ID header"}), 400
-        
-    data = request.json or {}
-    mode = data.get('mode', 'auto')
-    amount = data.get('amount', 100.0)
-    
-    result = coordinator.fire_all_4_manual(mode, amount)
-    return jsonify(result)
-
 @app.route('/api/test_stack', methods=['POST'])
 def test_stack():
     """🧪 Test if 7Mojos server accumulates multiple bets on the same table."""
@@ -665,13 +652,12 @@ def clear_cache():
     if not coordinator:
         return jsonify({"error": "Missing X-Session-ID header"}), 400
 
-    # Clear Andar Bahar round results and acks
+    # Call manager's manual cache clear (clears acks, frame flags, stale frames, GC)
+    res = coordinator.clear_cache()
+
+    # Clear Andar Bahar round results and last_result
     coordinator.account1.round_results.clear()
     coordinator.account2.round_results.clear()
-    coordinator.account1.pending_bet_acks.clear()
-    coordinator.account2.pending_bet_acks.clear()
-
-    # Clear last_result from each Andar Bahar table
     for info in coordinator.account1.tables.values():
         info.pop('last_result', None)
     for info in coordinator.account2.tables.values():
@@ -682,7 +668,7 @@ def clear_cache():
     coordinator.bet_state         = "idle"
     coordinator.auto_bet_requested = False
 
-    return jsonify({"success": True, "message": "Cache cleared successfully."})
+    return jsonify({"success": True, "message": "Cache cleared successfully.", "details": res})
 
 @app.route('/api/export_data', methods=['GET'])
 def export_data():
@@ -720,8 +706,6 @@ def get_logs():
 
 @app.route('/api/js_error', methods=['POST'])
 def js_error():
-    import logging
-    logger = logging.getLogger("ws_manager")
     data = request.json or {}
     msg = data.get('message', 'Unknown')
     stack = data.get('stack', '')

@@ -1662,9 +1662,6 @@ class GlobalCoordinator:
                         self.bet_history.append(record)
                         self._save_history_to_file()
 
-                        # 🧹 Clean up all garbage/cache after successful bet
-                        self._cleanup_after_bet(acc1, acc2, tokens_used)
-
                         if acc1.loop:
                             asyncio.run_coroutine_threadsafe(
                                 self._track_bet_result(tbl_names, bal1_bef, bal2_bef),
@@ -1704,9 +1701,6 @@ class GlobalCoordinator:
                         self.auto_bet_requested = True
                         self.bet_state = "armed"
 
-                        # 🧹 Clean up all garbage/cache after undone bet
-                        self._cleanup_after_bet(acc1, acc2, tokens_used)
-
                 except Exception as e:
                     logger.error(f"🚨 CRITICAL: _fire_and_verify_all CRASHED: {e}")
                     import traceback
@@ -1722,33 +1716,47 @@ class GlobalCoordinator:
                 daemon=True
             ).start()
 
-    def _cleanup_after_bet(self, acc1, acc2, tokens_used):
-        """Clear all garbage and stale cache after a bet cycle completes (success or undone)."""
-        # 1. Clear pending bet acks for used tokens
-        for tok in tokens_used:
-            acc1.pending_bet_acks.pop(tok, None)
-            acc2.pending_bet_acks.pop(tok, None)
+    def clear_cache(self):
+        """Manual cleanup — clears all pending acks, frame flags, stale cache + GC."""
+        acc1 = self.account1
+        acc2 = self.account2
 
-        # 2. Reset frame_ready flags on used tables
-        for tok in tokens_used:
-            if tok in acc1.tables:
-                acc1.tables[tok]['frame_ready'] = False
-            if tok in acc2.tables:
-                acc2.tables[tok]['frame_ready'] = False
+        # 1. Clear ALL pending bet acks
+        cleared_acks = len(acc1.pending_bet_acks) + len(acc2.pending_bet_acks)
+        acc1.pending_bet_acks.clear()
+        acc2.pending_bet_acks.clear()
 
-        # 3. Clear any stale prebuilt frames
-        for tok in tokens_used:
-            for key_prefix in ['prebuilt_frame_']:
-                for tbl_dict in [acc1.tables.get(tok, {}), acc2.tables.get(tok, {})]:
-                    stale_keys = [k for k in tbl_dict if k.startswith(key_prefix)]
-                    for k in stale_keys:
-                        del tbl_dict[k]
+        # 2. Reset frame_ready flags on ALL tables
+        for tok in list(acc1.tables.keys()):
+            acc1.tables[tok]['frame_ready'] = False
+        for tok in list(acc2.tables.keys()):
+            acc2.tables[tok]['frame_ready'] = False
 
-        # 4. Force garbage collection
+        # 3. Clear any stale prebuilt frames from ALL tables
+        stale_count = 0
+        for tbl_dict in [acc1.tables, acc2.tables]:
+            for tok in list(tbl_dict.keys()):
+                stale_keys = [k for k in tbl_dict[tok] if k.startswith('prebuilt_frame_')]
+                for k in stale_keys:
+                    del tbl_dict[tok][k]
+                    stale_count += 1
+
+        # 4. Reset hedge state
+        self._hedge_undone = False
+
+        # 5. Force garbage collection
         import gc
-        gc.collect()
+        collected = gc.collect()
 
-        logger.info(f"🧹 Post-bet cleanup done: cleared acks, frame cache, GC for {len(tokens_used)} tables")
+        total_tables = len(acc1.tables) + len(acc2.tables)
+        logger.info(f"🧹 CACHE CLEARED: {cleared_acks} acks, {stale_count} stale frames, {collected} GC objects, {total_tables} tables reset")
+        return {
+            "success": True,
+            "cleared_acks": cleared_acks,
+            "stale_frames": stale_count,
+            "gc_collected": collected,
+            "tables_reset": total_tables
+        }
 
     def _abort_and_rearm(self, bets, tables, reason):
         """Quick abort without undo — used for pre-flight failures."""
