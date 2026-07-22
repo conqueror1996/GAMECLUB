@@ -1394,9 +1394,14 @@
             </div>
         </div>
 
-        <button id="login-btn" class="btn btn-primary btn-full" onclick="doLogin()">
-            Connect Both Accounts
-        </button>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button id="login-btn" class="btn btn-primary" style="flex: 2; padding: 12px; font-weight: 700;" onclick="doLogin()">
+                Connect Both Accounts
+            </button>
+            <button id="login-clear-cache-btn" class="btn btn-outline" style="flex: 1; padding: 12px; font-weight: 600; border-color: rgba(0,229,255,0.3); color: var(--cyan);" onclick="clearCacheFromLogin()" title="Clear stale bet ACKs, table frames, and system memory before logging in">
+                🧹 Clear Cache
+            </button>
+        </div>
 
         <div id="login-status" class="status-msg" style="display:none">
             <span id="login-status-text">Initializing...</span>
@@ -1494,9 +1499,6 @@
                             Cancel
                         </button>
                     </div>
-                    <button id="fire-all-4-btn" class="btn btn-primary" onclick="fireAll4Now()" title="⚡ Instantly burst-fire ALL 4 bets across both tables now" style="padding:8px 16px; background: linear-gradient(135deg, #10b981, #059669); border: none; font-weight: 700;">
-                        ⚡ Fire All 4 Now
-                    </button>
                     <button class="btn btn-outline" onclick="clearCache()" title="Clear all results, history, and cached data" style="padding:8px 12px;">
                         🗑️
                     </button>
@@ -2045,47 +2047,6 @@
         } catch(e) {}
     }
 
-    async function fireAll4Now() {
-        const btn = document.getElementById('fire-all-4-btn');
-        if (btn) btn.disabled = true;
-        
-        const select = document.getElementById('bet-mode-select');
-        let mode = 'auto';
-        let amount = 100.0;
-        
-        if (select) {
-            if (select.value === 'auto') {
-                mode = 'auto';
-            } else if (select.value === 'custom') {
-                mode = 'fixed';
-                const val = parseFloat(document.getElementById('custom-amount-input').value);
-                if (!isNaN(val) && val > 0) amount = val;
-            } else {
-                mode = 'fixed';
-                amount = parseFloat(select.value);
-            }
-        }
-
-        try {
-            toast('Firing All 4', 'Pouncing on all 4 bets across both tables...', 'info', 3000);
-            const res = await fetch('/api/fire_all_4', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mode, amount })
-            });
-            const data = await res.json();
-            if (data.success) {
-                toast('⚡ Burst Fired!', data.message, 'success', 5000);
-            } else {
-                toast('Fire Failed', data.message, 'warn', 5000);
-            }
-        } catch(e) {
-            toast('Error', 'Failed to execute 4-table burst fire: ' + e, 'danger', 5000);
-        } finally {
-            setTimeout(() => { if (btn) btn.disabled = false; }, 2000);
-        }
-    }
-
     async function clearCache() {
         try {
             const res  = await fetch('/api/clear_cache', { method: 'POST' });
@@ -2099,6 +2060,36 @@
                 toast('Cache Cleared', 'All results, history, and bet data have been reset.', 'info', 3000);
             }
         } catch(e) {}
+    }
+
+    async function clearCacheFromLogin() {
+        const btn = document.getElementById('login-clear-cache-btn');
+        if (!btn) return;
+        const origText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '🧹 Clearing...';
+        try {
+            const res = await fetch('/api/clear_cache', { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                const errBox = document.getElementById('login-error');
+                const errText = document.getElementById('login-error-text');
+                if (errBox && errText) {
+                    errBox.style.display = 'block';
+                    errBox.className = 'status-msg';
+                    errBox.style.background = 'rgba(0,229,255,0.1)';
+                    errBox.style.borderColor = 'rgba(0,229,255,0.3)';
+                    errBox.style.color = 'var(--cyan)';
+                    errText.innerHTML = '🧹 <b>System & Cache Cleared!</b> All stale ACKs, frame flags and memory reset cleanly.';
+                    setTimeout(() => { errBox.style.display = 'none'; }, 4000);
+                }
+            }
+        } catch(e) {
+            console.error(e);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = origText;
+        }
     }
 
     async function testStackBet() {
