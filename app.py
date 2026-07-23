@@ -323,10 +323,10 @@ def status():
 
     latencies = []
     for t, info in tables1_snap.items():
-        if info.get("status") in ["Connected", "Betting Open"] and info.get("latency", -1) > 0:
+        if info.get("status") in ["Connected", "Betting Open", "Dealing"] and info.get("latency", -1) > 0:
             latencies.append(info["latency"])
     for t, info in tables2_snap.items():
-        if info.get("status") in ["Connected", "Betting Open"] and info.get("latency", -1) > 0:
+        if info.get("status") in ["Connected", "Betting Open", "Dealing"] and info.get("latency", -1) > 0:
             latencies.append(info["latency"])
             
     avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
@@ -502,7 +502,7 @@ def status():
         # ── Health & Signal ──
         "system_signal": signal,
         "system_ram": ram_usage,
-        "system_latency": max_latency,
+        "system_latency": avg_latency,
         "system_time_remaining": time_remaining,
         "system_signal_reasons": reasons,
         
