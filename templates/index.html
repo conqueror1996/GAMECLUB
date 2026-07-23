@@ -2652,18 +2652,19 @@
                 const remTime = data.system_time_remaining || 0;
                 const reasons = data.system_signal_reasons || [];
                 
-                // Real-time network signal strength update
+                // Real-time network signal strength update — compute directly from per-table latency
                 const netSignal = document.getElementById('net-signal');
                 const netLatencyVal = document.getElementById('net-latency-val');
                 if (netSignal && netLatencyVal) {
-                    const hasConnectedTables = (data.tables1 && data.tables1.some(t => t.status !== 'Disconnected' && t.status !== 'Reconnecting...')) ||
-                                               (data.tables2 && data.tables2.some(t => t.status !== 'Disconnected' && t.status !== 'Reconnecting...'));
-                    
-                    const latVal = (lat !== undefined && lat !== null && lat > 0) ? Math.round(lat) : 0;
+                    // Compute avg ping directly from per-table WebSocket RTT values
+                    let pingVals = [];
+                    if (data.tables1) data.tables1.forEach(t => { if (t.latency > 0) pingVals.push(t.latency); });
+                    if (data.tables2) data.tables2.forEach(t => { if (t.latency > 0) pingVals.push(t.latency); });
+                    const latVal = pingVals.length > 0 ? Math.round(pingVals.reduce((a,b) => a+b, 0) / pingVals.length) : 0;
                     
                     if (latVal > 0) {
                         netLatencyVal.innerText = `${latVal} ms`;
-                        netSignal.title = `7Mojos Real-time Engine Ping: ${latVal} ms (Updated every 1s)`;
+                        netSignal.title = `7Mojos WebSocket Engine Ping: ${latVal} ms (Live, updated every 1s)`;
                         if (latVal <= 80) {
                             netSignal.className = 'network-signal-container excellent';
                         } else if (latVal <= 150) {
@@ -2673,14 +2674,10 @@
                         } else {
                             netSignal.className = 'network-signal-container poor';
                         }
-                    } else if (hasConnectedTables) {
-                        netSignal.className = 'network-signal-container good';
-                        netLatencyVal.innerText = 'Syncing...';
-                        netSignal.title = 'Measuring 1s WebSocket RTT...';
                     } else {
                         netSignal.className = 'network-signal-container disconnected';
                         netLatencyVal.innerText = '-- ms';
-                        netSignal.title = 'Disconnected (Login to connect 7Mojos tables)';
+                        netSignal.title = 'No WebSocket ping data yet';
                     }
                 }
                 
