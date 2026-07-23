@@ -1108,7 +1108,7 @@ class BaccaratManager:
                     except Exception:
                         pass
                     break
-            await asyncio.sleep(2)  # Latency ping every 2s — fast health monitoring
+            await asyncio.sleep(1)  # Latency ping every 1s — exact 1-to-1 real-time sync
 
     async def start_all_tables_async(self):
         self.running = True

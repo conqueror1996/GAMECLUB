@@ -2659,17 +2659,28 @@
                     const hasConnectedTables = (data.tables1 && data.tables1.some(t => t.status !== 'Disconnected' && t.status !== 'Reconnecting...')) ||
                                                (data.tables2 && data.tables2.some(t => t.status !== 'Disconnected' && t.status !== 'Reconnecting...'));
                     
-                    const latVal = (lat && Math.round(lat) > 0) ? Math.round(lat) : 5;
-                    netLatencyVal.innerText = `${latVal} ms`;
-                    netSignal.title = `7Mojos Realtime Engine Ping: ${latVal} ms`;
-                    if (latVal <= 80) {
-                        netSignal.className = 'network-signal-container excellent';
-                    } else if (latVal <= 150) {
+                    const latVal = (lat !== undefined && lat !== null && lat > 0) ? Math.round(lat) : 0;
+                    
+                    if (latVal > 0) {
+                        netLatencyVal.innerText = `${latVal} ms`;
+                        netSignal.title = `7Mojos Real-time Engine Ping: ${latVal} ms (Updated every 1s)`;
+                        if (latVal <= 80) {
+                            netSignal.className = 'network-signal-container excellent';
+                        } else if (latVal <= 150) {
+                            netSignal.className = 'network-signal-container good';
+                        } else if (latVal <= 250) {
+                            netSignal.className = 'network-signal-container fair';
+                        } else {
+                            netSignal.className = 'network-signal-container poor';
+                        }
+                    } else if (hasConnectedTables) {
                         netSignal.className = 'network-signal-container good';
-                    } else if (latVal <= 250) {
-                        netSignal.className = 'network-signal-container fair';
+                        netLatencyVal.innerText = 'Syncing...';
+                        netSignal.title = 'Measuring 1s WebSocket RTT...';
                     } else {
-                        netSignal.className = 'network-signal-container poor';
+                        netSignal.className = 'network-signal-container disconnected';
+                        netLatencyVal.innerText = '-- ms';
+                        netSignal.title = 'Disconnected (Login to connect 7Mojos tables)';
                     }
                 }
                 
