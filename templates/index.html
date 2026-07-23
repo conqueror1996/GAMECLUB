@@ -1429,15 +1429,11 @@
             </div>
             <button class="btn btn-outline" style="font-size: 10px; padding: 6px 12px; height: fit-content;" onclick="goToLogin()" title="Return to login screen and switch accounts">🔑 Switch Accounts</button>
             
-            <!-- Real-time Mobile Network Signal Strength Indicator -->
-            <div class="network-signal-container disconnected" id="net-signal" title="Connecting...">
-                <div class="network-bars" style="margin-top: 1px;">
-                    <div class="bar bar-1"></div>
-                    <div class="bar bar-2"></div>
-                    <div class="bar bar-3"></div>
-                    <div class="bar bar-4"></div>
-                </div>
-                <span class="latency-value" id="net-latency-val">-- ms</span>
+            <!-- Real-time Network Health Ping Indicator -->
+            <div class="network-signal-container disconnected" id="net-signal" title="Connecting..." style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid var(--border);">
+                <span style="font-size: 13px;">📶</span>
+                <span style="font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Ping:</span>
+                <span class="latency-value" id="net-latency-val" style="font-size: 12px; font-weight: 800; color: var(--cyan); font-family: monospace;">-- ms</span>
             </div>
         </div>
         <div class="bal-row">
